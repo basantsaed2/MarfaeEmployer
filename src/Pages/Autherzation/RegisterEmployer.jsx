@@ -80,7 +80,7 @@ const RegisterEmployer = () => {
       localStorage.setItem("user", JSON.stringify(responseOTP?.data));
       localStorage.setItem("token", responseOTP?.data.token);
       const redirectTo = new URLSearchParams(location.search).get("redirect");
-      navigate(redirectTo || "/");
+      navigate(redirectTo || "/login");
       setIsOtpModalOpen(false); // Close modal
       toast.success("OTP verified successfully!");
     }

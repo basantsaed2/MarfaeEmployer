@@ -146,7 +146,7 @@ const LoginEmployer = () => {
           <DialogHeader>
             <DialogTitle>Account Not Active</DialogTitle>
             <DialogDescription>
-              Your employer account is not active yet. 
+              Your account is not active yet. 
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

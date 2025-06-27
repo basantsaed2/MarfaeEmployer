@@ -1,47 +1,38 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation, Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
-import { setUser } from "../../../Store/authSlice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import image from "../../../assets/Login.png";
 import "react-toastify/dist/ReactToastify.css";
-import { usePost } from "@/Hooks/UsePost";
-import { FaIdCard } from "react-icons/fa6";
-import { PiBagFill } from "react-icons/pi";
 import { FiArrowLeft } from "react-icons/fi";
+import { useChangeState } from "@/Hooks/useChangeState";
 
 const ChangePassword = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  const { postData, loadingPost, response } = usePost({ url: `${apiUrl}/change_password` });
-  const [emailOrUsername, setEmailOrUsername] = useState("");
+  const { changeState, loadingChange, responseChange } = useChangeState();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
-  const [activeTab, setActiveTab] = useState("Employer"); // Default tab
 
   useEffect(() => {
-    const localUser = localStorage.getItem("user");
-    if (localUser) {
-      toast.info("You are already logged in");
-      navigate("/", { replace: true });
-    }
-  }, [navigate]);
-
-  useEffect(() => {
-    if (!loadingPost && response) {
+    if (!loadingChange && responseChange) {
       toast.success("Password changed successfully!");
-      navigate("/"); // Redirect after successful password change
+
+      const timer = setTimeout(() => {
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        navigate("/login");
+      }, 3000); // 3000ms = 3 seconds
+
+      return () => clearTimeout(timer); // Cleanup in case the component unmounts
     }
-  }, [response, loadingPost, navigate]);
+  }, [responseChange, loadingChange, navigate]);
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
+
     if (!currentPassword || !newPassword || !confirmPassword) {
       toast.error("Please fill in all fields");
       return;
@@ -51,13 +42,14 @@ const ChangePassword = () => {
       return;
     }
 
-    const body = {
-      emailOrUsername,
-      currentPassword,
-      newPassword,
-    };
-
-    await postData(body, "Changing Password...");
+    await changeState(
+      `${apiUrl}/employeer/changePassword`, // API endpoint
+      `Password Changed Successfully.`,     // success toast message
+      {
+        current_password: currentPassword,
+        new_password: newPassword,
+      }
+    );
   };
 
   return (
@@ -66,7 +58,7 @@ const ChangePassword = () => {
     >
       <Card className="w-full border-none p-6 shadow-none">
         <CardContent className="space-y-6">
-          <h2 className="text-2xl font-semibold text-bg-primary flex items-center gap-2"> <FiArrowLeft  size={24} className="text-xl cursor-pointer"/> Change Password</h2>
+          <h2 className="text-2xl font-semibold text-bg-primary flex items-center gap-2"> <FiArrowLeft size={24} className="text-xl cursor-pointer" /> Change Password</h2>
           <form onSubmit={handleChangePassword} className="space-y-6 w-full lg:max-w-xl">
             <div className="space-y-3">
               <label htmlFor="currentPassword" className="text-md font-medium text-black">
@@ -111,15 +103,15 @@ const ChangePassword = () => {
               <Button
                 type="submit"
                 className="w-1/2 bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700"
-                disabled={loadingPost}
+                disabled={loadingChange}
               >
-                {loadingPost ? "Saving..." : "Save Changes"}
+                {loadingChange ? "Saving..." : "Save Changes"}
               </Button>
               <Button
                 type="button"
                 className="w-1/2 bg-gray-200 text-gray-700 p-2 rounded-md hover:bg-gray-300"
                 onClick={() => navigate(-1)}
-                disabled={loadingPost}
+                disabled={loadingChange}
               >
                 Cancel
               </Button>

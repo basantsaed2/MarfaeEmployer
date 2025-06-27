@@ -173,7 +173,7 @@ const LoginEmployer = () => {
     if (!loadingPost && response) {
       if (response.data.message === "Employeer account is not active yet") {
         setIsModalOpen(true); // Open modal if account is not active
-      } else {
+      } else if (response.status === 200) {
         dispatch(setUser(response?.data));
         localStorage.setItem("user", JSON.stringify(response?.data));
         localStorage.setItem("token", response?.data.token);

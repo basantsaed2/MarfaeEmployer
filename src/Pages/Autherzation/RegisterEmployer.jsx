@@ -68,8 +68,14 @@ const RegisterEmployer = () => {
 
   useEffect(() => {
     if (!loadingPost && response) {
+      console.log("response",response)
       // Open OTP modal on successful registration
+      if(response.status === 200){
       setIsOtpModalOpen(true);
+      }
+      else{
+        return;
+      }
     }
   }, [response, loadingPost]);
 

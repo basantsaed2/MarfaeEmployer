@@ -24,11 +24,13 @@ import {
     DialogFooter,
 } from "@/components/ui/dialog"; // Adjust the import path based on your project structure
 import { RiAlarmWarningLine } from "react-icons/ri";
+import { RiLockPasswordLine } from "react-icons/ri";
 
 const navItems = [
     { label: "Company Profile", to: "/", icon: <CgProfile size={20} /> },
     { label: "Job Management", to: "/jobs", icon: <BriefcaseBusiness className="stroke-2" size={20} /> },
     { label: "Job Alarts", to: "/job_alart", icon: <RiAlarmWarningLine size={20} /> },
+    { label: "Change Password", to: "/change_password", icon: <RiLockPasswordLine size={20} /> },
     { label: "Sign Out", to: "/login", icon: <PiSignOutBold className="text-red-600" size={20} /> },
 ];
 

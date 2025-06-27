@@ -1,25 +1,36 @@
-import React from "react";
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FiUpload, FiX, FiArrowLeft, FiGlobe, FiTwitter, FiFacebook, FiLinkedin } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
+import { useGet } from "@/Hooks/UseGet";
+import FullPageLoader from "@/components/Loading";
+import { useSelector } from "react-redux";
+import { FaLocationDot } from "react-icons/fa6";
 
 const CompanyProfile = () => {
+    const apiUrl = import.meta.env.VITE_API_BASE_URL;
     const navigate = useNavigate();
+    const isLoading = useSelector((state) => state.loader.isLoading);
+    const { refetch: refetchHomeList, loading: loadingHomeList, data: HomeListData } = useGet({
+        url: `${apiUrl}/employeer/homePage`,
+    });
+    const [homeData, setHomeData] = useState('');
+    const [companyDetails, setCompanyDetails] = useState('');
 
-    const companyDetails = {
-        name: "King Fahd Hospital",
-        email: "info@kfh.sa",
-        phone: "+966 123 456 789",
-        location_link: "123 Main St, Riyadh",
-        established: "15-01-2023",
-        description: "King Fahd Hospital is a leading healthcare provider in Riyadh, dedicated to delivering exceptional medical care.",
-        image: "https://via.placeholder.com/150", // Placeholder image URL; replace with actual image data if available
-        twitter_link: "https://twitter.com/kfhospital",
-        facebook_link: "https://facebook.com/kfhospital",
-        linkedin_link: "https://linkedin.com/company/kfhospital",
-        site_link: "https://www.kfhospital.sa",
-    };
+    useEffect(() => {
+        refetchHomeList();
+    }, [refetchHomeList]);
+
+    useEffect(() => {
+        if (HomeListData && HomeListData.company_details) {
+            setHomeData(HomeListData);
+            setCompanyDetails(HomeListData.company_details);
+        }
+    }, [HomeListData]);
+
+    if (isLoading || loadingHomeList) {
+        return <FullPageLoader />;
+    }
 
     const handleLogout = () => {
         navigate("/login");
@@ -78,6 +89,11 @@ const CompanyProfile = () => {
                                 <FiLinkedin className="h-5 w-5 text-blue-700" />
                             </a>
                         )}
+                        {companyDetails.location_link && (
+                            <a href={companyDetails.location_link} target="_blank" rel="noopener noreferrer">
+                                <FaLocationDot className="h-5 w-5 text-blue-700" />
+                            </a>
+                        )}
                     </div>
                     <div className="space-x-2 space-y-4">
                         <Button
@@ -90,7 +106,7 @@ const CompanyProfile = () => {
                         <Button
                             variant="outline"
                             className="border-gray-300 text-gray-700 px-3 py-1 text-sm"
-                            onClick={handleChangePassword}
+                            onClick={() => navigate("/change_password")}
                         >
                             Change password
                         </Button>
@@ -125,19 +141,19 @@ const CompanyProfile = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-white shadow-md p-4 rounded-lg text-center">
                     <h3 className="text-xs text-gray-500 uppercase">Total Jobs</h3>
-                    <p className="text-2xl font-bold text-blue-600">150</p>
+                    <p className="text-2xl font-bold text-blue-600">{homeData.total_jobs}</p>
                 </div>
                 <div className="bg-white shadow-md p-4 rounded-lg text-center">
                     <h3 className="text-xs text-gray-500 uppercase">Active Jobs</h3>
-                    <p className="text-2xl font-bold text-blue-600">120</p>
+                    <p className="text-2xl font-bold text-blue-600">{homeData.active_jobs}</p>
                 </div>
                 <div className="bg-white shadow-md p-4 rounded-lg text-center">
                     <h3 className="text-xs text-gray-500 uppercase">Expired Jobs</h3>
-                    <p className="text-2xl font-bold text-blue-600">30</p>
+                    <p className="text-2xl font-bold text-blue-600">{homeData.inactive_jobs}</p>
                 </div>
                 <div className="bg-white shadow-md p-4 rounded-lg text-center">
                     <h3 className="text-xs text-gray-500 uppercase">Applications Received</h3>
-                    <p className="text-2xl font-bold text-blue-600">500</p>
+                    <p className="text-2xl font-bold text-blue-600">{homeData.total_applications}</p>
                 </div>
             </div>
         </div>

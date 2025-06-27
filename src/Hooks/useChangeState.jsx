@@ -44,7 +44,11 @@ export const useChangeState = () => {
           // If errors is not an object, assume it's just a message
           toast.error(error.response.data.errors);
         }
-      } else if (error?.response?.data?.message) {
+      }else if (typeof error.response.data.error) {
+          // If errors is not an object, assume it's just a message
+          toast.error(error.response.data.error);
+        }
+       else if (error?.response?.data?.message) {
         // If there's a general message outside of the 'errors' object
         toast.error(error.response.data.message); // Display the general error message
       } else {

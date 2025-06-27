@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 
 const JobManagement = () => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
-    const { refetch: refetchJobs, loading: loadingJobs, data: dataJobs } = useGet({ url: `${apiUrl}/admin/getJobs` });
+    const { refetch: refetchJobs, loading: loadingJobs, data: dataJobs } = useGet({ url: `${apiUrl}/employeer/getJobs` });
     const { deleteData, loadingDelete } = useDelete();
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [isDetailsOpen, setIsDetailsOpen] = useState(false);
@@ -28,9 +28,9 @@ const JobManagement = () => {
         if (dataJobs && dataJobs.jobs) {
             const formatted = dataJobs.jobs.map((j) => ({
                 id: j.id || "—",
+                img: j.image_link || '',
                 title: j.job_titel?.name || "—",
                 job_titel_id: j.job_titel_id?.toString() || "—", // Add job_titel_id for edit
-                company: j.company?.name || "—",
                 job_category: j.job_category?.name || "—",
                 city: j.city?.name || "—",
                 zone: j.zone?.name || "—",
@@ -47,6 +47,7 @@ const JobManagement = () => {
                 job_category_id: j.job_category_id || "—",
                 city_id: j.city_id || "—",
                 zone_id: j.zone_id || "—",
+                status: j.status === "active" ? "Active" : "Inactive",
             }));
             setJobs(formatted);
         }
@@ -54,7 +55,6 @@ const JobManagement = () => {
 
     const Columns = [
         { key: "title", label: "Job Title" },
-        { key: "company", label: "Company" },
         { key: "job_category", label: "Category" },
         { key: "city", label: "City" },
         { key: "zone", label: "Zone" },

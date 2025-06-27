@@ -18,8 +18,6 @@ const ChangePassword = () => {
 
   useEffect(() => {
     if (!loadingChange && responseChange) {
-      toast.success("Password changed successfully!");
-
       const timer = setTimeout(() => {
         localStorage.removeItem("user");
         localStorage.removeItem("token");
@@ -48,6 +46,7 @@ const ChangePassword = () => {
       {
         current_password: currentPassword,
         new_password: newPassword,
+        new_password_confirmation: confirmPassword,
       }
     );
   };

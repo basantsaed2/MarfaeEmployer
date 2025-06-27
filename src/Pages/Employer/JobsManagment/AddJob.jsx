@@ -10,12 +10,11 @@ import { toast } from 'react-toastify';
 
 const AddJob = ({ lang = 'en' }) => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
-    const { refetch: refetchCompanies, loading: loadingCompanies, data: dataCompanies } = useGet({ url: `${apiUrl}/employeer/getCompanies` });
     const { refetch: refetchCategory, loading: loadingCategory, data: dataCategory } = useGet({ url: `${apiUrl}/employeer/getJobCategories` });
     const { refetch: refetchJobTitle, loading: loadingJobTitle, data: dataJobTitle } = useGet({ url: `${apiUrl}/employeer/getActiveJobTittles` });
     const { refetch: refetchCity, loading: loadingCity, data: dataCity } = useGet({ url: `${apiUrl}/employeer/getCities` });
     const { refetch: refetchZone, loading: loadingZone, data: dataZone } = useGet({ url: `${apiUrl}/employeer/getZones` });
-    const { postData, loadingPost, response: postResponse } = usePost({ url: `${apiUrl}/employeer/addJob` });
+    const { postData, loadingPost, response: postResponse } = usePost({ url: `${apiUrl}/employeer/addNewJob` });
     const { changeState, loadingChange, responseChange } = useChangeState();
 
     const location = useLocation();
@@ -27,7 +26,6 @@ const AddJob = ({ lang = 'en' }) => {
     const title = isEditMode ? 'Edit Job' : 'Add Job';
 
     const [values, setValues] = useState({
-        company_id: '',
         job_category_id: '',
         city_id: '',
         zone_id: '',
@@ -43,29 +41,17 @@ const AddJob = ({ lang = 'en' }) => {
         location_link: '',
     });
 
-    const [companies, setCompanies] = useState([]);
     const [categories, setCategories] = useState([]);
     const [jobTitles, setJobTitles] = useState([]);
     const [cities, setCities] = useState([]);
     const [zones, setZones] = useState([]);
 
     useEffect(() => {
-        refetchCompanies();
         refetchCategory();
         refetchJobTitle();
         refetchCity();
         refetchZone();
-    }, [refetchCompanies, refetchCategory, refetchJobTitle, refetchCity, refetchZone]);
-
-    useEffect(() => {
-        if (dataCompanies && dataCompanies.companies) {
-            const formatted = dataCompanies.companies.map((c) => ({
-                label: c.name || "—",
-                value: c.id.toString(),
-            }));
-            setCompanies(formatted);
-        }
-    }, [dataCompanies]);
+    }, [refetchCategory, refetchJobTitle, refetchCity, refetchZone]);
 
     useEffect(() => {
         if (dataCategory && dataCategory.jobCategories) {
@@ -112,12 +98,6 @@ const AddJob = ({ lang = 'en' }) => {
     }, [dataZone, values.city_id]);
 
     const fields = [
-        {
-            name: 'company_id',
-            type: 'select',
-            placeholder: 'Select Company *',
-            options: companies,
-        },
         {
             name: 'job_category_id',
             type: 'select',
@@ -216,7 +196,6 @@ const AddJob = ({ lang = 'en' }) => {
         if (initialItemData) {
             setValues({
                 id: initialItemData.id || '',
-                company_id: initialItemData.company_id?.toString() || '',
                 job_category_id: initialItemData.job_category_id?.toString() || '',
                 city_id: initialItemData.city_id?.toString() || '',
                 zone_id: initialItemData.zone_id?.toString() || '',
@@ -226,7 +205,7 @@ const AddJob = ({ lang = 'en' }) => {
                 image: initialItemData.image_link || '',
                 type: initialItemData.type || '',
                 level: initialItemData.level || '',
-                status: initialItemData.status || 'inactive',
+                status: initialItemData.status === 'Active' ? 'active' : 'inactive',
                 expected_salary: initialItemData.expected_salary?.toString() || '',
                 expire_date: initialItemData.expire_date || '',
                 location_link: initialItemData.location_link || '',
@@ -246,7 +225,6 @@ const AddJob = ({ lang = 'en' }) => {
 
     const handleSubmit = async () => {
         if (
-            !values.company_id ||
             !values.job_category_id ||
             !values.city_id ||
             !values.zone_id ||
@@ -267,7 +245,6 @@ const AddJob = ({ lang = 'en' }) => {
             if (isEditMode) {
                 const data = {
                     id: values.id,
-                    company_id: parseInt(values.company_id),
                     job_category_id: parseInt(values.job_category_id),
                     city_id: parseInt(values.city_id),
                     zone_id: parseInt(values.zone_id),
@@ -275,7 +252,7 @@ const AddJob = ({ lang = 'en' }) => {
                     description: values.description,
                     qualifications: values.qualifications,
                     type: values.type,
-                    level: values.level,
+                    experience: values.level,
                     status: values.status || 'inactive',
                     expected_salary: parseFloat(values.expected_salary),
                     expire_date: values.expire_date,
@@ -291,7 +268,6 @@ const AddJob = ({ lang = 'en' }) => {
                 );
             } else {
                 const body = new FormData();
-                body.append('company_id', values.company_id);
                 body.append('job_category_id', values.job_category_id);
                 body.append('city_id', values.city_id);
                 body.append('zone_id', values.zone_id);
@@ -302,7 +278,7 @@ const AddJob = ({ lang = 'en' }) => {
                     body.append('image', values.image);
                 }
                 body.append('type', values.type);
-                body.append('level', values.level);
+                body.append('experience', values.level);
                 body.append('status', values.status || 'inactive');
                 body.append('expected_salary', values.expected_salary);
                 body.append('expire_date', values.expire_date);
@@ -324,7 +300,6 @@ const AddJob = ({ lang = 'en' }) => {
     const handleReset = () => {
         setValues(initialItemData ? {
             id: initialItemData.id || '',
-            company_id: initialItemData.company_id?.toString() || '',
             job_category_id: initialItemData.job_category_id?.toString() || '',
             city_id: initialItemData.city_id?.toString() || '',
             zone_id: initialItemData.zone_id?.toString() || '',
@@ -339,7 +314,6 @@ const AddJob = ({ lang = 'en' }) => {
             expire_date: initialItemData.expire_date || '',
             location_link: initialItemData.location_link || '',
         } : {
-            company_id: '',
             job_category_id: '',
             city_id: '',
             zone_id: '',
@@ -360,7 +334,7 @@ const AddJob = ({ lang = 'en' }) => {
         navigate(-1);
     };
 
-    if (loadingCompanies || loadingJobTitle || loadingCategory || loadingCity || loadingZone) {
+    if (loadingJobTitle || loadingCategory || loadingCity || loadingZone) {
         return <FullPageLoader />;
     }
 

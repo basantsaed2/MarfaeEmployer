@@ -36,8 +36,11 @@ const AddNewCompany = () => {
 
   useEffect(() => {
     if (!loadingPost && response) {
-      toast.success("Company added successfully!");
-      navigate("/");
+      const timer = setTimeout(() => {
+        navigate("/register");
+      }, 2000); // 3000ms = 3 seconds
+
+      return () => clearTimeout(timer); // Cleanup in case the component unmounts
     }
   }, [response, loadingPost, navigate]);
 
@@ -74,7 +77,7 @@ const AddNewCompany = () => {
       image: imageFile,
     };
 
-    await postData(body, "Adding Company...");
+    await postData(body, "Company added successfully!");
   };
 
   const removeImage = () => {
@@ -87,8 +90,8 @@ const AddNewCompany = () => {
       className="w-full py-16 px-6 xl:py-0 min-h-screen flex items-center justify-center bg-cover bg-center"
       style={{ backgroundImage: `url(${image})` }}
     >      <div className="absolute top-4 left-4">
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-white hover:bg-blue-50 hover:text-bgBabyBlue"
         >
@@ -96,7 +99,7 @@ const AddNewCompany = () => {
           Back
         </Button>
       </div>
-      
+
       <Card className="w-full py-0 max-w-6xl shadow-xl rounded-xl overflow-hidden border-0">
         <div className="md:flex">
           {/* Left Side - Image Upload */}
@@ -105,13 +108,13 @@ const AddNewCompany = () => {
               <h2 className="text-2xl text-bg-primary font-bold mb-2">Company Profile</h2>
               <p className="text-bgBabyBlue">Add your company details and logo</p>
             </div>
-            
+
             <div className="relative w-full aspect-square max-w-xs">
               {previewImage ? (
                 <div className="relative h-full w-full rounded-lg overflow-hidden border-2 border-white border-dashed">
-                  <img 
-                    src={previewImage} 
-                    alt="Preview" 
+                  <img
+                    src={previewImage}
+                    alt="Preview"
                     className="h-full w-full object-cover"
                   />
                   <button
@@ -122,17 +125,17 @@ const AddNewCompany = () => {
                   </button>
                 </div>
               ) : (
-                <label 
+                <label
                   htmlFor="image-upload"
                   className="flex flex-col items-center justify-center h-full w-full border-2 border-bg-primary border-dashed rounded-lg cursor-pointer bg-white hover:bg-blue-400/30 transition-colors"
                 >
                   <FiUpload className="h-10 w-10 text-bgBabyBlue mb-3" />
                   <span className="text-bgBabyBlue font-medium">Upload Logo</span>
                   <span className="text-bgBabyBlue text-sm mt-1">PNG, JPG (max. 5MB)</span>
-                  <input 
-                    id="image-upload" 
-                    type="file" 
-                    accept="image/*" 
+                  <input
+                    id="image-upload"
+                    type="file"
+                    accept="image/*"
                     onChange={handleImageChange}
                     className="hidden"
                     disabled={loadingPost}
@@ -141,7 +144,7 @@ const AddNewCompany = () => {
               )}
             </div>
           </div>
-          
+
           {/* Right Side - Form */}
           <div className="md:w-2/3 p-2 md:p-6 xl:p-8 bg-white">
             <CardHeader>
@@ -150,7 +153,7 @@ const AddNewCompany = () => {
                 Fill in your company details below
               </CardDescription> */}
             </CardHeader>
-            
+
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -167,7 +170,7 @@ const AddNewCompany = () => {
                       disabled={loadingPost}
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="email" className="text-gray-700">Email *</Label>
                     <Input
@@ -182,7 +185,7 @@ const AddNewCompany = () => {
                     />
                   </div>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="location_link" className="text-gray-700">Location</Label>
@@ -197,7 +200,7 @@ const AddNewCompany = () => {
                       disabled={loadingPost}
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="phone" className="text-gray-700">Phone *</Label>
                     <Input
@@ -212,7 +215,7 @@ const AddNewCompany = () => {
                     />
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="description" className="text-gray-700">Description *</Label>
                   <Textarea
@@ -225,7 +228,7 @@ const AddNewCompany = () => {
                     disabled={loadingPost}
                   />
                 </div>
-                
+
                 <div className="space-y-3">
                   <Label className="text-gray-700">Social Media Links</Label>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -243,7 +246,7 @@ const AddNewCompany = () => {
                         disabled={loadingPost}
                       />
                     </div>
-                    
+
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
                         <FiFacebook className="h-5 w-5" />
@@ -258,7 +261,7 @@ const AddNewCompany = () => {
                         disabled={loadingPost}
                       />
                     </div>
-                    
+
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
                         <FiLinkedin className="h-5 w-5" />
@@ -273,7 +276,7 @@ const AddNewCompany = () => {
                         disabled={loadingPost}
                       />
                     </div>
-                    
+
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
                         <FiGlobe className="h-5 w-5" />
@@ -290,7 +293,7 @@ const AddNewCompany = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="flex flex-col md:flex-row gap-3 pt-2">
                   <Button
                     type="submit"
@@ -307,7 +310,7 @@ const AddNewCompany = () => {
                       </span>
                     ) : "Submit Company"}
                   </Button>
-                  
+
                   <Button
                     type="button"
                     variant="outline"
@@ -323,7 +326,7 @@ const AddNewCompany = () => {
           </div>
         </div>
       </Card>
-      
+
       <ToastContainer position="top-center" autoClose={3000} />
     </div>
   );

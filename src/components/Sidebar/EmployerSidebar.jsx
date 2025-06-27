@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
-import { BriefcaseBusiness } from "lucide-react";
+import { BriefcaseBusiness, SquareChartGantt } from "lucide-react";
 import { PiSignOutBold } from "react-icons/pi";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,10 +25,13 @@ import {
 } from "@/components/ui/dialog"; // Adjust the import path based on your project structure
 import { RiAlarmWarningLine } from "react-icons/ri";
 import { RiLockPasswordLine } from "react-icons/ri";
+import { TbReportSearch } from "react-icons/tb";
 
 const navItems = [
     { label: "Company Profile", to: "/", icon: <CgProfile size={20} /> },
     { label: "Job Management", to: "/jobs", icon: <BriefcaseBusiness className="stroke-2" size={20} /> },
+    { label: "Plans", to: "/plans", icon: <SquareChartGantt className="stroke-2" size={20} /> },
+    { label: "Search CV", to: "/search_cv", icon: <TbReportSearch size={20} /> },
     { label: "Job Alarts", to: "/job_alart", icon: <RiAlarmWarningLine size={20} /> },
     { label: "Change Password", to: "/change_password", icon: <RiLockPasswordLine size={20} /> },
     { label: "Sign Out", to: "/login", icon: <PiSignOutBold className="text-red-600" size={20} /> },

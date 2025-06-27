@@ -14,6 +14,7 @@ import ChangePassword from "./Pages/Employer/CompanyProfile/ChangePassword";
 import JobsManagment from "./Pages/Employer/JobsManagment/JobsManagment";
 import AddJob from "./Pages/Employer/JobsManagment/AddJob";
 import JobAlarts from "./Pages/Employer/JobAlarts/JobAlarts";
+import Plans from "./Pages/Employer/Plans/Plans";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -23,25 +24,33 @@ const router = createBrowserRouter([
       {
         path: "login",
         element: (
-          // <ProtAuth>
-          <LoginEmployer />
-          // </ProtAuth>
+          <ProtAuth>
+            <LoginEmployer />
+          </ProtAuth>
         ),
       },
       {
         path: "register",
         element: (
-          // <ProtAuth>
-          <RegisterEmployer />
-          // </ProtAuth>
+          <ProtAuth>
+            <RegisterEmployer />
+          </ProtAuth>
         ),
       },
       {
         path: "add_company",
         element: (
-          // <ProtAuth>
-          <AddNewCompany />
-          // </ProtAuth>
+          <ProtAuth>
+            <AddNewCompany />
+          </ProtAuth>
+        ),
+      },
+       {
+        path: "plans_list",
+        element: (
+          <ProtAuth>
+            <Plans />
+          </ProtAuth>
         ),
       },
     ],
@@ -82,6 +91,12 @@ const router = createBrowserRouter([
         path: "job_alart",
         children: [
           { index: true, element: <JobAlarts /> },
+        ],
+      },
+      {
+        path: "plans",
+        children: [
+          { index: true, element: <Plans /> },
         ],
       },
       {

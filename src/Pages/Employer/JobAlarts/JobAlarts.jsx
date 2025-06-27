@@ -58,9 +58,7 @@ const JobAlarts = () => {
             <Table
                 data={users}
                 columns={columns}
-                filterKeys={["companyName", "site", "jobTitle"]}
                 statusKey="status"
-                titles={{ companyName: "Company Name", site: "Site", jobTitle: "Job Title" }}
                 onView={handleView}
                 onEdit={handleEdit}
                 onDelete={handleDelete}

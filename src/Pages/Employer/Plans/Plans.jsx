@@ -210,7 +210,7 @@ const Plans = () => {
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
             <div className="flex flex-col md:flex-row justify-between items-center mb-8">
-                <h2 className="text-4xl font-extrabold text-gray-900 mb-4 md:mb-0">Our Plans</h2>
+                <h2 className="text-4xl font-extrabold text-bg-primary mb-4 md:mb-0">Our Plans</h2>
                 {/* Enhanced Yearly/Monthly Tabs */}
                 <div className="flex bg-white p-1 rounded-full shadow-inner">
                     <Button

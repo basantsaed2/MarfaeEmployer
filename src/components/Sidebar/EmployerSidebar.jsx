@@ -26,13 +26,14 @@ import {
 import { RiAlarmWarningLine } from "react-icons/ri";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { TbReportSearch } from "react-icons/tb";
+import logo from "@/assets/Logo.png"
 
 const navItems = [
     { label: "Company Profile", to: "/", icon: <CgProfile size={20} /> },
     { label: "Job Management", to: "/jobs", icon: <BriefcaseBusiness className="stroke-2" size={20} /> },
     { label: "Plans", to: "/plans", icon: <SquareChartGantt className="stroke-2" size={20} /> },
     { label: "Search CV", to: "/search_cv", icon: <TbReportSearch size={20} /> },
-    { label: "Job Alarts", to: "/job_alart", icon: <RiAlarmWarningLine size={20} /> },
+    // { label: "Job Alarts", to: "/job_alart", icon: <RiAlarmWarningLine size={20} /> },
     { label: "Change Password", to: "/change_password", icon: <RiLockPasswordLine size={20} /> },
     { label: "Sign Out", to: "/login", icon: <PiSignOutBold className="text-red-600" size={20} /> },
 ];
@@ -98,17 +99,15 @@ export function EmployerSidebar() {
                 }}
             >
                 <SidebarGroup>
-                    <SidebarGroupLabel className="p-4 text-white flex items-center justify-center gap-3">
-                        {villageImage && (
+                    <SidebarGroupLabel className="p-2 text-white flex items-center justify-center gap-3">
                             <img
-                                src={villageImage}
-                                alt={villageName || "Village"}
-                                className="w-20 h-20 rounded-full object-cover border-2 border-white/30 hover:scale-105 transition-transform duration-200"
+                                src={logo}
+                                alt={logo || "Marfae"}
+                                className="w-dull h-24 object-cover border-2 border-white/30 hover:scale-105 transition-transform duration-200"
                             />
-                        )}
-                        <span className="text-xl leading-[30px] font-bold text-center text-bg-primary">
+                        {/* <span className="text-xl leading-[30px] font-bold text-center text-bg-primary">
                             {"Administration panel"}
-                        </span>
+                        </span> */}
                     </SidebarGroupLabel>
                     <hr className="w-full border-white !mb-3" />
 

@@ -58,22 +58,22 @@ const RegisterEmployer = () => {
     }
   }, [data]);
 
-  useEffect(() => {
-    const localUser = localStorage.getItem("user");
-    if (localUser) {
-      toast.info("You are already logged in");
-      navigate("/", { replace: true });
-    }
-  }, [navigate]);
+  // useEffect(() => {
+  //   const localUser = localStorage.getItem("user");
+  //   if (localUser) {
+  //     toast.info("You are already logged in");
+  //     navigate("/", { replace: true });
+  //   }
+  // }, [navigate]);
 
   useEffect(() => {
     if (!loadingPost && response) {
-      console.log("response",response)
+      console.log("response", response)
       // Open OTP modal on successful registration
-      if(response.status === 200){
-      setIsOtpModalOpen(true);
+      if (response.status === 200) {
+        setIsOtpModalOpen(true);
       }
-      else{
+      else {
         return;
       }
     }
@@ -81,14 +81,19 @@ const RegisterEmployer = () => {
 
   useEffect(() => {
     if (!loadingOTP && responseOTP) {
+      if (responseOTP.status === 200) {
+        navigate("/login");
+        setIsOtpModalOpen(false); // Close modal
+        toast.success("OTP verified successfully!");
+      }
       // Handle successful OTP verification
-      dispatch(setUser(responseOTP?.data));
-      localStorage.setItem("user", JSON.stringify(responseOTP?.data));
-      localStorage.setItem("token", responseOTP?.data.token);
-      const redirectTo = new URLSearchParams(location.search).get("redirect");
-      navigate(redirectTo || "/login");
-      setIsOtpModalOpen(false); // Close modal
-      toast.success("OTP verified successfully!");
+      // dispatch(setUser(responseOTP?.data));
+      // localStorage.setItem("user", JSON.stringify(responseOTP?.data));
+      // localStorage.setItem("token", responseOTP?.data.token);
+      // const redirectTo = new URLSearchParams(location.search).get("redirect");
+      // navigate("/login");
+      // setIsOtpModalOpen(false); // Close modal
+      // toast.success("OTP verified successfully!");
     }
   }, [responseOTP, loadingOTP, navigate, dispatch]);
 
@@ -155,17 +160,15 @@ const RegisterEmployer = () => {
         <CardContent className="p-0">
           <div className="w-full flex justify-center">
             <button
-              className={`w-full flex justify-center items-center gap-2 rounded-tl-lg px-4 py-2 font-semibold ${
-                activeTab === "Candidate" ? "text-white bg-blue-600" : "text-bg-primary bg-gray-100"
-              }`}
+              className={`w-full flex justify-center items-center gap-2 rounded-tl-lg px-4 py-2 font-semibold ${activeTab === "Candidate" ? "text-white bg-blue-600" : "text-bg-primary bg-gray-100"
+                }`}
               onClick={() => setActiveTab("Candidate")}
             >
               <FaIdCard /> Candidate
             </button>
             <button
-              className={`w-full flex justify-center items-center gap-2 rounded-tr-lg px-4 py-2 font-semibold ${
-                activeTab === "Employer" ? "text-white bg-blue-600" : "text-bg-primary bg-gray-100"
-              }`}
+              className={`w-full flex justify-center items-center gap-2 rounded-tr-lg px-4 py-2 font-semibold ${activeTab === "Employer" ? "text-white bg-blue-600" : "text-bg-primary bg-gray-100"
+                }`}
               onClick={() => setActiveTab("Employer")}
             >
               <PiBagFill /> Employer
@@ -240,7 +243,7 @@ const RegisterEmployer = () => {
               >
                 {loadingPost ? "Registering..." : "Register"}
               </Button>
-               <Link to="/add_company"
+              <Link to="/add_company"
                 className="w-full flex justify-end text-xl underline text-bgBabyBlue font-bold hover:text-blue-500 transition-colors duration-300"
                 disabled={loadingPost}
               >

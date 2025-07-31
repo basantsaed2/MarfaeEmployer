@@ -60,9 +60,11 @@ const router = createBrowserRouter([
   // ✅ الصفحات المحمية داخل MainLayout
   {
     element: (
-      <SidebarProvider>
-        <AdminLayout />
-      </SidebarProvider>
+        <ProtectedRoute>  
+        <SidebarProvider>
+          <AdminLayout />
+        </SidebarProvider>
+      </ProtectedRoute>
     ),
     children: [
       {

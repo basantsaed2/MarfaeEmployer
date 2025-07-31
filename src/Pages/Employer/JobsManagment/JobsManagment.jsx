@@ -36,7 +36,6 @@ const JobManagement = () => {
                 zone: j.zone?.name || "—",
                 type: j.type || "—",
                 level: j.experience || "—",
-                status: j.status === "active" ? "Active" : "Inactive",
                 description: j.description || "—",
                 qualifications: j.qualifications || "—",
                 expected_salary: j.expected_salary || "—",
@@ -74,7 +73,7 @@ const JobManagement = () => {
         if (!selectedRow) return;
 
         const success = await deleteData(
-            `${apiUrl}/admin/deleteJob/${selectedRow.id}`,
+            `${apiUrl}/employeer/deleteJob/${selectedRow.id}`,
             `${selectedRow.title} Deleted Successfully.`
         );
 

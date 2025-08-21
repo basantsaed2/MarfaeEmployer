@@ -13,7 +13,6 @@ import EditCompanyProfile from "./Pages/Employer/CompanyProfile/EditCompanyProfi
 import ChangePassword from "./Pages/Employer/CompanyProfile/ChangePassword";
 import JobsManagment from "./Pages/Employer/JobsManagment/JobsManagment";
 import AddJob from "./Pages/Employer/JobsManagment/AddJob";
-import JobAlarts from "./Pages/Employer/JobAlarts/JobAlarts";
 import Plans from "./Pages/Employer/Plans/Plans";
 import Cv from "./Pages/Employer/Cv/Cv";
 
@@ -93,12 +92,6 @@ const router = createBrowserRouter([
       {
         path: "search_cv",
         element: <Cv/>
-      },
-      {
-        path: "job_alart",
-        children: [
-          { index: true, element: <JobAlarts /> },
-        ],
       },
       {
         path: "plans",

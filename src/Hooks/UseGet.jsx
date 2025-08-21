@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useSelector } from "react-redux";
 
 export const useGet = ({ url, enabled = true, pollInterval }) => {
-  const { user } = useSelector((state) => state.auth); // Get user from Redux store
+  const { employer } = useSelector((state) => state.auth); // Get employer from Redux store
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(enabled);
 
@@ -13,7 +13,7 @@ export const useGet = ({ url, enabled = true, pollInterval }) => {
       const response = await axios.get(url, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${user?.token || ""}`,
+          Authorization: `Bearer ${employer?.token || ""}`,
         },
       });
       if (response.status === 200 || response.status === 201) {
@@ -24,7 +24,7 @@ export const useGet = ({ url, enabled = true, pollInterval }) => {
     } finally {
       setLoading(false);
     }
-  }, [url, user?.token]);
+  }, [url, employer?.token]);
 
   useEffect(() => {
     if (enabled) {

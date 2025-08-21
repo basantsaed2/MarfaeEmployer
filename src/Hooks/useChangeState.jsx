@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 
 export const useChangeState = () => {
-  const { user } = useSelector((state) => state.auth); // Get user from Redux store
+  const { employer } = useSelector((state) => state.auth); // Get employer from Redux store
   const [loadingChange, setLoadingChange] = useState(false);
   const [responseChange, setResponseChange] = useState(null);
 
@@ -13,7 +13,7 @@ export const useChangeState = () => {
     try {
       const config = {
         headers: {
-          'Authorization': `Bearer ${user?.token || ''}`,
+          'Authorization': `Bearer ${employer?.token || ''}`,
         },
       };
       const response = await axios.put(url, data || {}, config);

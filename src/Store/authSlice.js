@@ -2,22 +2,22 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  user: JSON.parse(localStorage.getItem("user")) || null,
+  employer: JSON.parse(localStorage.getItem("employer")) || null,
 };
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setUser: (state, action) => {
-      state.user = action.payload;
+    setEmployer: (state, action) => {
+      state.employer = action.payload;
     },
     logout: (state) => {
-      state.user = null;
-      localStorage.removeItem("user");
+      state.employer = null;
+      localStorage.removeItem("employer");
     },
   },
 });
 
-export const { setUser, logout } = authSlice.actions;
+export const { setEmployer, logout } = authSlice.actions;
 export default authSlice.reducer;

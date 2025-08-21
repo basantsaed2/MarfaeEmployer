@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 export const useDelete = () => {
-  const { user } = useSelector((state) => state.auth); // Get user from Redux store
+  const { employer } = useSelector((state) => state.auth); // Get employer from Redux store
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [responseDelete, setResponseDelete] = useState(null);
 
@@ -12,7 +12,7 @@ export const useDelete = () => {
     try {
       const config = {
         headers: {
-          'Authorization': `Bearer ${user?.token || ''}`,
+          'Authorization': `Bearer ${employer?.token || ''}`,
         },
       };
 

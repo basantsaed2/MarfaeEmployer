@@ -19,7 +19,7 @@ const ChangePassword = () => {
   useEffect(() => {
     if (!loadingChange && responseChange) {
       const timer = setTimeout(() => {
-        localStorage.removeItem("user");
+        localStorage.removeItem("employer");
         localStorage.removeItem("token");
         navigate("/login");
       }, 3000); // 3000ms = 3 seconds

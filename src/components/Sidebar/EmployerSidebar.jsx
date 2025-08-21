@@ -26,14 +26,13 @@ import {
 import { RiAlarmWarningLine } from "react-icons/ri";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { TbReportSearch } from "react-icons/tb";
-import logo from "@/assets/Logo.png"
+import logo from "@/assets/Logo.jpeg"
 
 const navItems = [
     { label: "Company Profile", to: "/", icon: <CgProfile size={20} /> },
     { label: "Job Management", to: "/jobs", icon: <BriefcaseBusiness className="stroke-2" size={20} /> },
     { label: "Plans", to: "/plans", icon: <SquareChartGantt className="stroke-2" size={20} /> },
     { label: "Search CV", to: "/search_cv", icon: <TbReportSearch size={20} /> },
-    // { label: "Job Alarts", to: "/job_alart", icon: <RiAlarmWarningLine size={20} /> },
     { label: "Change Password", to: "/change_password", icon: <RiLockPasswordLine size={20} /> },
     { label: "Sign Out", to: "/login", icon: <PiSignOutBold className="text-red-600" size={20} /> },
 ];
@@ -43,9 +42,7 @@ export function EmployerSidebar() {
     const navigate = useNavigate();
     const { i18n } = useTranslation();
     const isRTL = i18n.dir() === "rtl";
-    const user = useSelector((state) => state.auth.user);
-    const villageName = user?.village?.village?.name || "Marfae";
-    const villageImage = user?.village?.village?.image_link || null;
+    const employer = useSelector((state) => state.auth.employer);
 
     const [expandedItems, setExpandedItems] = useState({});
     const [showModal, setShowModal] = useState(false);
@@ -77,7 +74,7 @@ export function EmployerSidebar() {
     };
 
     const handleConfirmSignOut = () => {
-        // Add sign-out logic here (e.g., clear user from Redux store or localStorage)
+        // Add sign-out logic here (e.g., clear employer from Redux store or localStorage)
         navigate("/login");
         setShowModal(false);
     };
@@ -105,9 +102,6 @@ export function EmployerSidebar() {
                                 alt={logo || "Marfae"}
                                 className="w-dull h-24 object-cover border-2 border-white/30 hover:scale-105 transition-transform duration-200"
                             />
-                        {/* <span className="text-xl leading-[30px] font-bold text-center text-bg-primary">
-                            {"Administration panel"}
-                        </span> */}
                     </SidebarGroupLabel>
                     <hr className="w-full border-white !mb-3" />
 

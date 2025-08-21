@@ -18,7 +18,7 @@ import {
 import { toast } from "react-toastify";
 
 const Plans = () => {
-    const userData = JSON.parse(localStorage.getItem("user"));
+    const userData = JSON.parse(localStorage.getItem("employer"));
     // Use optional chaining for safer access to nested properties
     const userPlanId = userData?.subscription?.plan_id;
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -131,7 +131,7 @@ const Plans = () => {
     };
 
     const PlanCard = ({ plan }) => {
-        // Check if the current plan is the user's active plan
+        // Check if the current plan is the employer's active plan
         const isCurrentPlan = userPlanId === plan.id;
 
         return (

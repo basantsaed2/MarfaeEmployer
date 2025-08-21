@@ -39,7 +39,7 @@ const EditCompanyProfile = () => {
     useEffect(() => {
         if (!loadingPost && response) {
             toast.success("Company updated successfully!");
-            navigate("/company-profile");
+            navigate("/");
         }
     }, [response, loadingPost, navigate]);
 
@@ -101,7 +101,7 @@ const EditCompanyProfile = () => {
             </div>
 
             <Card className="w-full py-0 flex items-center justify-center shadow-xl rounded-xl overflow-hidden border-0">
-                <div className="md:flex">
+                <div className="w-full md:flex">
                     {/* Left Side - Image Upload */}
                     <div className="md:w-1/3 bg-white p-6 flex flex-col items-center justify-center">
                         <div className="text-center text-white mb-6">

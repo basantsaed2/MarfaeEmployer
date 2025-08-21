@@ -10,7 +10,7 @@ import { useSelector } from "react-redux";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function Navbar({ className }) {
-  const userData = JSON.parse(localStorage.getItem("user"));
+  const userData = JSON.parse(localStorage.getItem("employer"));
   const navigate = useNavigate();
   const userName = userData?.user?.first_name+ " " + userData?.user?.last_name || userData?.user?.full_name || "";
   const userInitials = userName
@@ -18,7 +18,7 @@ export default function Navbar({ className }) {
     : "AD";
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
+    localStorage.removeItem("employer");
     localStorage.removeItem("token");
     navigate("/login");
   };
@@ -33,7 +33,7 @@ export default function Navbar({ className }) {
           {/* <Avatar className="w-8 h-8 bg-bg-primary text-white font-bold">
             <AvatarFallback>{userInitials}</AvatarFallback>
           </Avatar> */}
-         Hello {userName || "Admin"}
+         Hello {userName || "Employer"}
         </div>
         </div>
 

@@ -169,13 +169,13 @@ const AddJob = ({ lang = 'en' }) => {
             name: 'expected_salary',
             type: 'input',
             placeholder: 'Expected Salary *',
-            typeInput: 'number',
+            inputType: 'number',
         },
         {
             name: 'expire_date',
             type: 'input',
             placeholder: 'Expiration Date (YYYY-MM-DD) *',
-            typeInput: 'date',
+            inputType: 'date',
         },
         {
             name: 'location_link',

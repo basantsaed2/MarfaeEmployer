@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,17 +10,18 @@ import { Label } from "@/components/ui/label";
 import { FiUpload, FiX, FiArrowLeft, FiGlobe, FiTwitter, FiFacebook, FiLinkedin } from "react-icons/fi";
 import image from "../../../assets/Login.png";
 import "react-toastify/dist/ReactToastify.css";
-import { usePost } from "@/Hooks/UsePost";
+import { useChangeState } from "@/Hooks/UseChangeState";
 
 const EditCompanyProfile = () => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
-    const { postData, loadingPost, response } = usePost({ url: `${apiUrl}/addCompanyNewData` });
+    const { employer } = useSelector((state) => state.auth);
+    const { changeState, loadingChange, responseChange } = useChangeState();
     const navigate = useNavigate();
-    const dispatch = useDispatch();
     const location = useLocation();
 
     // Initialize formData with data from location.state if available
     const initialFormData = location.state?.companyDetails || {
+        id: "",
         name: "",
         email: "",
         location_link: "",
@@ -30,26 +31,44 @@ const EditCompanyProfile = () => {
         facebook_link: "",
         linkedin_link: "",
         site_link: "",
+        city_id: "",
+        country_id: "",
+        company_type_id: "",
+        specializations: []
     };
 
     const [formData, setFormData] = useState(initialFormData);
-    const [imageFile, setImageFile] = useState(initialFormData.image || null);
-    const [previewImage, setPreviewImage] = useState(initialFormData.image || null);
+    const [imageFile, setImageFile] = useState(null);
+    const [previewImage, setPreviewImage] = useState(initialFormData.image_link || null);
 
     useEffect(() => {
-        if (!loadingPost && response) {
+        // Set initial preview image from company details
+        if (initialFormData.image_link && initialFormData.image_link !== "Invalid base64 image string") {
+            setPreviewImage(initialFormData.image_link);
+        }
+    }, [initialFormData]);
+
+    useEffect(() => {
+        if (!loadingChange && responseChange) {
             toast.success("Company updated successfully!");
             navigate("/");
         }
-    }, [response, loadingPost, navigate]);
+    }, [responseChange, loadingChange, navigate]);
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                setImageFile(reader.result);
-                setPreviewImage(reader.result);
+                const base64String = reader.result;
+                setImageFile(base64String);
+                setPreviewImage(base64String);
+                
+                // Update formData with base64 image
+                setFormData((prev) => ({
+                    ...prev,
+                    image: base64String
+                }));
             };
             reader.readAsDataURL(file);
         }
@@ -66,29 +85,51 @@ const EditCompanyProfile = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!formData.name || !formData.email || !formData.phone || !formData.description || !imageFile) {
+        if (!formData.name || !formData.email || !formData.phone || !formData.description) {
             toast.error("Please fill in all required fields");
             return;
         }
 
-        const body = {
-            ...formData,
-            image: imageFile,
+        // Prepare the data according to the API requirements
+        const updateData = {
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            description: formData.description,
+            location_link: formData.location_link,
+            facebook_link: formData.facebook_link,
+            twitter_link: formData.twitter_link,
+            linkedin_link: formData.linkedin_link,
+            site_link: formData.site_link,
+            city_id: formData.city_id || 1, // Default value if not provided
+            country_id: formData.country_id || 1, // Default value if not provided
+            company_type_id: formData.company_type_id || 1, // Default value if not provided
+            specializations: formData.specializations || []
         };
 
-        await postData(body, "Updating Company...");
+        // Only include image if it was changed
+        if (imageFile) {
+            updateData.image = imageFile;
+        }
+
+        const url = `${apiUrl}/employeer/update-company-data/${formData.id}`;
+        
+        await changeState(url, "Company updated successfully!", updateData);
     };
 
     const removeImage = () => {
         setImageFile(null);
         setPreviewImage(null);
+        
+        // Remove image from formData
+        setFormData((prev) => ({
+            ...prev,
+            image: ""
+        }));
     };
 
     return (
-        <div
-            className="w-full p-6 pt-0 min-h-screen flex flex-col gap-3 bg-cover bg-center"
-            // style={{ backgroundImage: `url(${image})` }}
-        >
+        <div className="w-full p-6 pt-0 min-h-screen flex flex-col gap-3 bg-cover bg-center">
             <div className="">
                 <Button
                     variant="ghost"
@@ -138,7 +179,7 @@ const EditCompanyProfile = () => {
                                         accept="image/*"
                                         onChange={handleImageChange}
                                         className="hidden"
-                                        disabled={loadingPost}
+                                        disabled={loadingChange}
                                     />
                                 </label>
                             )}
@@ -147,10 +188,6 @@ const EditCompanyProfile = () => {
 
                     {/* Right Side - Form */}
                     <div className="md:w-2/3 p-2 md:p-6 xl:p-8 bg-white">
-                        {/* <CardHeader>
-                            <CardTitle className="text-2xl font-bold text-bg-primary">Company Information</CardTitle>
-                        </CardHeader> */}
-
                         <CardContent>
                             <form onSubmit={handleSubmit} className="space-y-5">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -164,7 +201,7 @@ const EditCompanyProfile = () => {
                                             value={formData.name}
                                             onChange={handleChange}
                                             className="w-full py-2"
-                                            disabled={loadingPost}
+                                            disabled={loadingChange}
                                         />
                                     </div>
 
@@ -178,7 +215,7 @@ const EditCompanyProfile = () => {
                                             value={formData.email}
                                             onChange={handleChange}
                                             className="w-full py-2"
-                                            disabled={loadingPost}
+                                            disabled={loadingChange}
                                         />
                                     </div>
                                 </div>
@@ -194,7 +231,7 @@ const EditCompanyProfile = () => {
                                             value={formData.location_link}
                                             onChange={handleChange}
                                             className="w-full py-2"
-                                            disabled={loadingPost}
+                                            disabled={loadingChange}
                                         />
                                     </div>
 
@@ -208,7 +245,7 @@ const EditCompanyProfile = () => {
                                             value={formData.phone}
                                             onChange={handleChange}
                                             className="w-full py-2"
-                                            disabled={loadingPost}
+                                            disabled={loadingChange}
                                         />
                                     </div>
                                 </div>
@@ -222,7 +259,7 @@ const EditCompanyProfile = () => {
                                         value={formData.description}
                                         onChange={handleChange}
                                         className="w-full min-h-[100px] py-2"
-                                        disabled={loadingPost}
+                                        disabled={loadingChange}
                                     />
                                 </div>
 
@@ -240,7 +277,7 @@ const EditCompanyProfile = () => {
                                                 value={formData.twitter_link}
                                                 onChange={handleChange}
                                                 className="pl-10 py-2"
-                                                disabled={loadingPost}
+                                                disabled={loadingChange}
                                             />
                                         </div>
 
@@ -255,7 +292,7 @@ const EditCompanyProfile = () => {
                                                 value={formData.facebook_link}
                                                 onChange={handleChange}
                                                 className="pl-10 py-2"
-                                                disabled={loadingPost}
+                                                disabled={loadingChange}
                                             />
                                         </div>
 
@@ -270,7 +307,7 @@ const EditCompanyProfile = () => {
                                                 value={formData.linkedin_link}
                                                 onChange={handleChange}
                                                 className="pl-10 py-2"
-                                                disabled={loadingPost}
+                                                disabled={loadingChange}
                                             />
                                         </div>
 
@@ -285,19 +322,24 @@ const EditCompanyProfile = () => {
                                                 value={formData.site_link}
                                                 onChange={handleChange}
                                                 className="pl-10 py-2"
-                                                disabled={loadingPost}
+                                                disabled={loadingChange}
                                             />
                                         </div>
                                     </div>
                                 </div>
 
+                                {/* Hidden fields for IDs */}
+                                <input type="hidden" name="city_id" value={formData.city_id} />
+                                <input type="hidden" name="country_id" value={formData.country_id} />
+                                <input type="hidden" name="company_type_id" value={formData.company_type_id} />
+
                                 <div className="flex flex-col md:flex-row gap-3 pt-2">
                                     <Button
                                         type="submit"
                                         className="w-full md:w-1/2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3 rounded-lg shadow-md transition-all"
-                                        disabled={loadingPost}
+                                        disabled={loadingChange}
                                     >
-                                        {loadingPost ? (
+                                        {loadingChange ? (
                                             <span className="flex items-center justify-center">
                                                 <svg
                                                     className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
@@ -329,7 +371,7 @@ const EditCompanyProfile = () => {
                                         variant="outline"
                                         className="w-full md:w-1/2 py-3 rounded-lg border-gray-300 hover:bg-gray-50 transition-colors"
                                         onClick={() => navigate(-1)}
-                                        disabled={loadingPost}
+                                        disabled={loadingChange}
                                     >
                                         Cancel
                                     </Button>

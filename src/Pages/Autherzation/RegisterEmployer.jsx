@@ -290,7 +290,7 @@ const RegisterEmployer = () => {
               </motion.div>
               <Link
                 to="/add_company"
-                className="w-full flex justify-end text-bg-primary text-sm font-semibold hover:underline hover:text-blue-500 transition-colors duration-200"
+                className="w-full flex justify-end text-bg-primary text-sm font-semibold underline hover:text-blue-500 transition-colors duration-200"
                 disabled={loadingPost}
               >
                 Add A New Company...
@@ -304,6 +304,15 @@ const RegisterEmployer = () => {
               >
                 Log In
               </Link>
+            </p>
+            <p className="mt-3 text-center text-sm text-gray-500">
+              Register as an Employer?{" "}
+              <a
+                href="https://mrfae.com/register"
+                className="font-semibold text-blue-600 hover:underline hover:text-blue-700 transition-colors duration-200"
+              >
+                Employer Register
+              </a>
             </p>
           </CardContent>
         </Card>

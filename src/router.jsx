@@ -15,6 +15,7 @@ import JobsManagment from "./Pages/Employer/JobsManagment/JobsManagment";
 import AddJob from "./Pages/Employer/JobsManagment/AddJob";
 import Plans from "./Pages/Employer/Plans/Plans";
 import Cv from "./Pages/Employer/Cv/Cv";
+import SearchUsers from "./Pages/Employer/SearchUsers/SearchUsers";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -92,6 +93,10 @@ const router = createBrowserRouter([
       {
         path: "search_cv",
         element: <Cv/>
+      },
+       {
+        path: "search_user",
+        element: <SearchUsers/>
       },
       {
         path: "plans",

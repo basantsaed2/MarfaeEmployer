@@ -87,7 +87,7 @@ const JobManagement = () => {
     return (
         <div className="p-4">
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl text-bg-primary font-bold">Job Management</h2>
+                <h2 className="text-3xl text-bg-primary font-bold">Job Management</h2>
                 <Link
                     to="add"
                     className="flex justify-center items-center px-4 py-1 rounded-md text-base bg-bg-secondary font-semibold text-white hover:bg-bg-secondary/90"

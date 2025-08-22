@@ -27,12 +27,14 @@ import { RiAlarmWarningLine } from "react-icons/ri";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { TbReportSearch } from "react-icons/tb";
 import logo from "@/assets/Logo.jpeg"
+import { MdOutlinePersonSearch } from "react-icons/md";
 
 const navItems = [
     { label: "Company Profile", to: "/", icon: <CgProfile size={20} /> },
     { label: "Job Management", to: "/jobs", icon: <BriefcaseBusiness className="stroke-2" size={20} /> },
     { label: "Plans", to: "/plans", icon: <SquareChartGantt className="stroke-2" size={20} /> },
     { label: "Search CV", to: "/search_cv", icon: <TbReportSearch size={20} /> },
+    { label: "Search User", to: "/search_user", icon: <MdOutlinePersonSearch size={20} /> },
     { label: "Change Password", to: "/change_password", icon: <RiLockPasswordLine size={20} /> },
     { label: "Sign Out", to: "/login", icon: <PiSignOutBold className="text-red-600" size={20} /> },
 ];
@@ -97,11 +99,11 @@ export function EmployerSidebar() {
             >
                 <SidebarGroup>
                     <SidebarGroupLabel className="p-2 text-white flex items-center justify-center gap-3">
-                            <img
-                                src={logo}
-                                alt={logo || "Marfae"}
-                                className="w-dull h-24 object-cover border-2 border-white/30 hover:scale-105 transition-transform duration-200"
-                            />
+                        <img
+                            src={logo}
+                            alt={logo || "Marfae"}
+                            className="w-dull h-24 object-cover border-2 border-white/30 hover:scale-105 transition-transform duration-200"
+                        />
                     </SidebarGroupLabel>
                     <hr className="w-full border-white !mb-3" />
 

@@ -53,9 +53,9 @@ const CompanyProfile = () => {
             <div className="flex flex-col lg:flex-row bg-white p-4 rounded-lg shadow-md space-x-6">
                 <div className="w-full lg:w-1/3">
                     <div className="bg-gray-200 h-56 lg:h-full flex items-center justify-center rounded-lg overflow-hidden">
-                        {companyDetails.image ? (
+                        {companyDetails.image_link ? (
                             <img
-                                src={companyDetails.image}
+                                src={companyDetails.image_link}
                                 alt="Company Logo"
                                 className="h-full w-full object-cover"
                             />

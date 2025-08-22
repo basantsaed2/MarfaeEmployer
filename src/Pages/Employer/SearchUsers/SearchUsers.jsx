@@ -207,22 +207,22 @@ const SearchUsers = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 font-sans">
+        <div className="min-h-screen p-4 md:p-6 font-sans">
             <div className="w-full">
                 {/* Header */}
-                <div className="mb-8 text-center md:text-left">
+                <div className="mb-6 text-center md:text-left">
                     <h1 className="text-3xl text-bg-primary font-bold leading-tight">
                         Find Users
                     </h1>
                     <p className="text-gray-600 mt-2 text-md">
-                        Search for skilled professionals by specialization and experience
+                        Search for skilled by specialization and experience
                         level.
                     </p>
                 </div>
 
                 {/* Search Filters */}
                 <div className="bg-white rounded-xl shadow-xl p-6 mb-8">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-end">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Specialization

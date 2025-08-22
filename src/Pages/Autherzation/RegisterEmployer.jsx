@@ -306,12 +306,12 @@ const RegisterEmployer = () => {
               </Link>
             </p>
             <p className="mt-3 text-center text-sm text-gray-500">
-              Register as an Employer?{" "}
+              Register as an User?{" "}
               <a
                 href="https://mrfae.com/register"
                 className="font-semibold text-blue-600 hover:underline hover:text-blue-700 transition-colors duration-200"
               >
-                Employer Register
+                User Register
               </a>
             </p>
           </CardContent>

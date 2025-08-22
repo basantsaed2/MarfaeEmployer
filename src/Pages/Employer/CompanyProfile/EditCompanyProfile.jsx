@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { FiUpload, FiX, FiArrowLeft, FiGlobe, FiTwitter, FiFacebook, FiLinkedin } from "react-icons/fi";
 import image from "../../../assets/Login.png";
 import "react-toastify/dist/ReactToastify.css";
-import { useChangeState } from "@/Hooks/UseChangeState";
+import { useChangeState } from "@/Hooks/useChangeState";
 
 const EditCompanyProfile = () => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;

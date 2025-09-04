@@ -36,6 +36,7 @@ const navItems = [
     { label: "Drugs", to: "/drugs", icon: <GiPill className="stroke-1" size={20} /> },
     { label: "Plans", to: "/plans", icon: <SquareChartGantt className="stroke-2" size={20} /> },
     { label: "Search CV", to: "/search_cv", icon: <TbReportSearch size={20} /> },
+        { label: "Assign CV", to: "/my_cv", icon: <TbReportSearch size={20} /> },
     { label: "Search User", to: "/search_user", icon: <MdOutlinePersonSearch size={20} /> },
     { label: "Change Password", to: "/change_password", icon: <RiLockPasswordLine size={20} /> },
     { label: "Sign Out", to: "/login", icon: <PiSignOutBold className="text-red-600" size={20} /> },

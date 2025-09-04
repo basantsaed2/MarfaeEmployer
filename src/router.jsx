@@ -18,6 +18,7 @@ import Cv from "./Pages/Employer/Cv/Cv";
 import SearchUsers from "./Pages/Employer/SearchUsers/SearchUsers";
 import Drug from "./Pages/Employer/Drugs/Drug";
 import AddDrug from "./Pages/Employer/Drugs/AddDrug";
+import AssignedCV from "./Pages/Employer/Cv/AssignedCV";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -102,6 +103,10 @@ const router = createBrowserRouter([
       {
         path: "search_cv",
         element: <Cv />
+      },
+       {
+        path: "my_cv",
+        element: <AssignedCV />
       },
       {
         path: "search_user",

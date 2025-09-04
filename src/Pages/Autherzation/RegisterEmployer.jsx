@@ -213,7 +213,7 @@ const RegisterEmployer = () => {
                   }`}
               >
                 <FaBriefcase className="text-md md:text-lg" />
-                Employer
+                User
               </motion.button>
             </div>
           </div>
@@ -413,7 +413,7 @@ const RegisterEmployer = () => {
                 </motion.div>
               ) : (
                 <motion.div
-                  key="employer-content"
+                  key="user-content"
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
@@ -455,7 +455,7 @@ const RegisterEmployer = () => {
                     whileTap={{ scale: 0.95 }}
                   >
                     <a
-                      href="https://mrfae.mrfae.com/register"
+                      href="https://mrfae.com/register"
                       className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-bg-primary to-blue-600 text-white text-lg font-semibold rounded-2xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl group"
                       target="_blank"
                       rel="noopener noreferrer"

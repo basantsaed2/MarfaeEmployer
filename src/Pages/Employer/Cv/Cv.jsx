@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useGet } from '@/Hooks/UseGet';
-import { useChangeState } from '@/Hooks/UseChangeState';
+import { useChangeState } from '@/Hooks/useChangeState';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";

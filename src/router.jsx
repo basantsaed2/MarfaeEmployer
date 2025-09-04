@@ -16,6 +16,8 @@ import AddJob from "./Pages/Employer/JobsManagment/AddJob";
 import Plans from "./Pages/Employer/Plans/Plans";
 import Cv from "./Pages/Employer/Cv/Cv";
 import SearchUsers from "./Pages/Employer/SearchUsers/SearchUsers";
+import Drug from "./Pages/Employer/Drugs/Drug";
+import AddDrug from "./Pages/Employer/Drugs/AddDrug";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -60,7 +62,7 @@ const router = createBrowserRouter([
   // ✅ الصفحات المحمية داخل MainLayout
   {
     element: (
-        <ProtectedRoute>  
+      <ProtectedRoute>
         <SidebarProvider>
           <AdminLayout />
         </SidebarProvider>
@@ -91,12 +93,19 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "search_cv",
-        element: <Cv/>
+        path: "drugs",
+        children: [
+          { index: true, element: <Drug /> },
+          { path: "add", element: <AddDrug /> },
+        ],
       },
-       {
+      {
+        path: "search_cv",
+        element: <Cv />
+      },
+      {
         path: "search_user",
-        element: <SearchUsers/>
+        element: <SearchUsers />
       },
       {
         path: "plans",

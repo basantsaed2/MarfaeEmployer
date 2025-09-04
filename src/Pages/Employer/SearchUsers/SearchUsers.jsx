@@ -11,6 +11,7 @@ import {
     Star,
     Tag,
     Calendar,
+    MapPin,
 } from "lucide-react";
 
 // Assuming these are your custom hooks
@@ -39,9 +40,19 @@ const UserCard = ({ user }) => (
                     {user.full_name || "Anonymous User"}
                 </h3>
                 <p className="text-gray-500">{user.role || "N/A"}</p>
+                {/* Display location information */}
+                {(user.city?.name || user.country?.name) && (
+                    <p className="text-gray-500 text-sm mt-1 flex items-center">
+                        <MapPin size={14} className="mr-1" />
+                        {user.city?.name && user.country?.name
+                            ? `${user.city.name}, ${user.country.name}`
+                            : user.city?.name || user.country?.name
+                        }
+                    </p>
+                )}
             </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 text-sm text-gray-600">
+        <div className="grid grid-cols-1 gap-4 mt-4 text-sm text-gray-600">
             <p className="flex items-center">
                 <Mail size={16} className="mr-2 text-blue-500" />
                 <span className="font-medium">Email:</span> {user.email || "—"}
@@ -104,7 +115,6 @@ const UserCard = ({ user }) => (
         </div>
     </div>
 );
-
 // Main component
 const SearchUsers = () => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -115,6 +125,9 @@ const SearchUsers = () => {
     } = useGet({
         url: `${apiUrl}/employeer/get-specialization-experience`,
     });
+    const { refetch: refetchRegion, loading: loadingRegion, data: regionData } = useGet({
+        url: `${apiUrl}/employeer/city-country`,
+    });
     const { postData, loadingPost, response, error: postError } = usePost({
         url: `${apiUrl}/employeer/search-users`,
     });
@@ -122,15 +135,23 @@ const SearchUsers = () => {
     const [filters, setFilters] = useState({
         specialization: null,
         experience: null,
+        country: null,
+        city: null,
     });
     const [users, setUsers] = useState([]);
     const [errorMessage, setErrorMessage] = useState(null);
     const [specializationOptions, setSpecializationOptions] = useState([]);
     const [experienceOptions, setExperienceOptions] = useState([]);
+    const [cities, setCities] = useState([]);
+    const [countries, setCountries] = useState([]);
+    const [filteredCities, setFilteredCities] = useState([]);
+    const [selectedCountry, setSelectedCountry] = useState(null);
+    const [selectedCity, setSelectedCity] = useState(null);
 
     useEffect(() => {
         refetchList();
-    }, [refetchList]);
+        refetchRegion();
+    }, [refetchList, refetchRegion]);
 
     useEffect(() => {
         if (dataList?.data) {
@@ -155,6 +176,36 @@ const SearchUsers = () => {
     }, [dataList]);
 
     useEffect(() => {
+        if (regionData?.countries && regionData?.cities) {
+            const formattedCountries = regionData.countries.map((country) => ({
+                label: country.name,
+                value: country.id.toString(),
+            }));
+            const formattedCities = regionData.cities.map((city) => ({
+                label: city.name,
+                value: city.id.toString(),
+                countryId: city.country_id?.toString(),
+            }));
+            setCountries(formattedCountries);
+            setCities(formattedCities);
+        }
+    }, [regionData]);
+
+    // Filter cities when country selection changes
+    useEffect(() => {
+        if (selectedCountry && cities.length > 0) {
+            const filtered = cities.filter(city => city.countryId === selectedCountry.value);
+            setFilteredCities(filtered);
+            setSelectedCity(null);
+            setFilters({ ...filters, city: null });
+        } else {
+            setFilteredCities([]);
+            setSelectedCity(null);
+            setFilters({ ...filters, city: null });
+        }
+    }, [selectedCountry, cities]);
+
+    useEffect(() => {
         if (response) {
             const activeUsers = Array.isArray(response.data?.data)
                 ? response.data.data.filter(user => user.status !== "deleted")
@@ -169,15 +220,27 @@ const SearchUsers = () => {
     }, [response, postError]);
 
     const handleSearch = () => {
-        if (filters.specialization || filters.experience) {
+        if (filters.specialization || filters.experience || filters.country || filters.city) {
             postData({
                 specialization: filters.specialization?.value,
                 experience: filters.experience?.value,
+                country_id: filters.country?.value,
+                city_id: filters.city?.value,
             });
         } else {
             setErrorMessage("Please select at least one filter to search.");
             setUsers([]);
         }
+    };
+
+    const handleCountryChange = (selectedOption) => {
+        setSelectedCountry(selectedOption);
+        setFilters({ ...filters, country: selectedOption, city: null });
+    };
+
+    const handleCityChange = (selectedOption) => {
+        setSelectedCity(selectedOption);
+        setFilters({ ...filters, city: selectedOption });
     };
 
     const customSelectStyles = {
@@ -215,14 +278,13 @@ const SearchUsers = () => {
                         Find Users
                     </h1>
                     <p className="text-gray-600 mt-2 text-md">
-                        Search for skilled by specialization and experience
-                        level.
+                        Search for skilled by specialization, experience level, and location.
                     </p>
                 </div>
 
                 {/* Search Filters */}
                 <div className="bg-white rounded-xl shadow-xl p-6 mb-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-end">
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 items-end">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Specialization
@@ -255,7 +317,36 @@ const SearchUsers = () => {
                                 isClearable
                             />
                         </div>
-                        <div className="flex items-end">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Country
+                            </label>
+                            <Select
+                                options={countries}
+                                value={filters.country}
+                                onChange={handleCountryChange}
+                                placeholder="Select Country"
+                                styles={customSelectStyles}
+                                isLoading={loadingRegion}
+                                isClearable
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                City
+                            </label>
+                            <Select
+                                options={filteredCities}
+                                value={filters.city}
+                                onChange={handleCityChange}
+                                placeholder="Select City"
+                                styles={customSelectStyles}
+                                isLoading={loadingRegion}
+                                isClearable
+                                isDisabled={!selectedCountry}
+                            />
+                        </div>
+                        <div className="flex items-end md:col-span-2 xl:col-span-1">
                             <button
                                 onClick={handleSearch}
                                 disabled={loadingPost}
@@ -278,15 +369,15 @@ const SearchUsers = () => {
                 </div>
 
                 {/* Results */}
-                <div className="grid gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                     {loadingPost && (
-                        <div className="flex flex-col items-center justify-center py-12 text-gray-500">
+                        <div className="flex flex-col items-center justify-center py-12 text-gray-500 md:col-span-2 xl:col-span-3">
                             <Loader2 className="animate-spin text-blue-600" size={48} />
                             <p className="mt-4">Fetching users...</p>
                         </div>
                     )}
                     {!loadingPost && users.length === 0 && !errorMessage && (
-                        <div className="text-center py-12">
+                        <div className="text-center py-12 md:col-span-2 xl:col-span-3">
                             <User className="mx-auto text-gray-400 mb-4" size={64} />
                             <p className="text-gray-600 text-lg">
                                 No active users found. Try adjusting your search filters.

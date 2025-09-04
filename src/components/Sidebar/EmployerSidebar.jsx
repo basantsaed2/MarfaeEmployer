@@ -28,10 +28,12 @@ import { RiLockPasswordLine } from "react-icons/ri";
 import { TbReportSearch } from "react-icons/tb";
 import logo from "@/assets/Logo.jpeg"
 import { MdOutlinePersonSearch } from "react-icons/md";
+import { GiPill } from "react-icons/gi";
 
 const navItems = [
     { label: "Company Profile", to: "/", icon: <CgProfile size={20} /> },
-    { label: "Job Management", to: "/jobs", icon: <BriefcaseBusiness className="stroke-2" size={20} /> },
+    { label: "Jobs", to: "/jobs", icon: <BriefcaseBusiness className="stroke-2" size={20} /> },
+    { label: "Drugs", to: "/drugs", icon: <GiPill className="stroke-1" size={20} /> },
     { label: "Plans", to: "/plans", icon: <SquareChartGantt className="stroke-2" size={20} /> },
     { label: "Search CV", to: "/search_cv", icon: <TbReportSearch size={20} /> },
     { label: "Search User", to: "/search_user", icon: <MdOutlinePersonSearch size={20} /> },

@@ -32,16 +32,16 @@ const AddJob = ({ lang = 'en' }) => {
         jobTitle: '',
         description: '',
         qualifications: '',
-        image: null,
+        // image: null,
         type: '',
         experience: '',
         status: 'inactive',
         expected_salary: '',
         expire_date: '',
-        location_link: '',
+        // location_link: '',
     });
 
-    const [imageChanged, setImageChanged] = useState(false); // Track if image was changed
+    // const [imageChanged, setImageChanged] = useState(false); // Track if image was changed
     const [categories, setCategories] = useState([]);
     const [jobTitles, setJobTitles] = useState([]);
     const [cities, setCities] = useState([]);
@@ -134,12 +134,12 @@ const AddJob = ({ lang = 'en' }) => {
             type: 'textarea',
             placeholder: 'Qualifications *',
         },
-        {
-            name: 'image',
-            type: 'file',
-            placeholder: 'Upload Image',
-            accept: 'image/*',
-        },
+        // {
+        //     name: 'image',
+        //     type: 'file',
+        //     placeholder: 'Upload Image',
+        //     accept: 'image/*',
+        // },
         {
             name: 'type',
             type: 'select',
@@ -178,11 +178,11 @@ const AddJob = ({ lang = 'en' }) => {
             placeholder: 'Expiration Date *',
             inputType: 'date',
         },
-        {
-            name: 'location_link',
-            type: 'input',
-            placeholder: 'Location Link (e.g., Google Maps URL)',
-        },
+        // {
+        //     name: 'location_link',
+        //     type: 'input',
+        //     placeholder: 'Location Link (e.g., Google Maps URL)',
+        // },
         {
             type: "switch",
             name: "status",
@@ -203,15 +203,15 @@ const AddJob = ({ lang = 'en' }) => {
                 jobTitle: initialItemData.job_titel_id?.toString() || '',
                 description: initialItemData.description || '',
                 qualifications: initialItemData.qualifications || '',
-                image: initialItemData.img || '',
+                // image: initialItemData.img || '',
                 type: initialItemData.type || '',
                 experience: initialItemData.experience || '',
                 status: initialItemData.status === 'Active' ? 'active' : 'inactive',
                 expected_salary: initialItemData.expected_salary?.toString() || '',
                 expire_date: initialItemData.expire_date || '',
-                location_link: initialItemData.location_link || '',
+                // location_link: initialItemData.location_link || '',
             });
-            setImageChanged(false); // Reset image changed flag when loading initial data
+            // setImageChanged(false); // Reset image changed flag when loading initial data
         }
     }, [initialItemData]);
 
@@ -225,9 +225,9 @@ const AddJob = ({ lang = 'en' }) => {
         });
 
         // Track if image was changed
-        if (name === 'image') {
-            setImageChanged(true);
-        }
+        // if (name === 'image') {
+        //     setImageChanged(true);
+        // }
     };
 
     const handleSubmit = async () => {
@@ -261,12 +261,12 @@ const AddJob = ({ lang = 'en' }) => {
                     status: values.status || 'inactive',
                     expected_salary: parseFloat(values.expected_salary),
                     expire_date: values.expire_date,
-                    location_link: values.location_link || '',
+                    // location_link: values.location_link || '',
                 };
                 // Only include image if it was changed
-                if (imageChanged && values.image) {
-                    data.image = values.image;
-                }
+                // if (imageChanged && values.image) {
+                //     data.image = values.image;
+                // }
                 await changeState(
                     `${apiUrl}/employeer/editJob/${values.id}`,
                     'Job Updated Successfully!',
@@ -280,15 +280,15 @@ const AddJob = ({ lang = 'en' }) => {
                 body.append('job_titel_id', values.jobTitle);
                 body.append('description', values.description);
                 body.append('qualifications', values.qualifications);
-                if (values.image) {
-                    body.append('image', values.image);
-                }
+                // if (values.image) {
+                //     body.append('image', values.image);
+                // }
                 body.append('type', values.type);
                 body.append('experience', values.experience);
                 body.append('status', values.status || 'inactive');
                 body.append('expected_salary', values.expected_salary);
                 body.append('expire_date', values.expire_date);
-                body.append('location_link', values.location_link || '');
+                // body.append('location_link', values.location_link || '');
 
                 await postData(body, 'Job Added Successfully!');
             }
@@ -299,7 +299,7 @@ const AddJob = ({ lang = 'en' }) => {
 
     useEffect(() => {
         if ((!loadingChange && responseChange) || (!loadingPost && postResponse)) {
-            navigate(-1);
+            navigate('/jobs');
         }
     }, [responseChange, postResponse, navigate]);
 
@@ -312,13 +312,13 @@ const AddJob = ({ lang = 'en' }) => {
             jobTitle: initialItemData.job_titel_id?.toString() || '',
             description: initialItemData.description || '',
             qualifications: initialItemData.qualifications || '',
-            image: initialItemData.img || '',
+            // image: initialItemData.img || '',
             type: initialItemData.type || '',
             experience: initialItemData.experience || '',
             status: initialItemData.status || 'inactive',
             expected_salary: initialItemData.expected_salary?.toString() || '',
             expire_date: initialItemData.expire_date || '',
-            location_link: initialItemData.location_link || '',
+            // location_link: initialItemData.location_link || '',
         } : {
             job_category_id: '',
             city_id: '',
@@ -326,15 +326,15 @@ const AddJob = ({ lang = 'en' }) => {
             jobTitle: '',
             description: '',
             qualifications: '',
-            image: null,
+            // image: null,
             type: '',
             experience: '',
             status: 'inactive',
             expected_salary: '',
             expire_date: '',
-            location_link: '',
+            // location_link: '',
         });
-        setImageChanged(false); // Reset image changed flag on reset
+        // setImageChanged(false); // Reset image changed flag on reset
     };
 
     const handleBack = () => {

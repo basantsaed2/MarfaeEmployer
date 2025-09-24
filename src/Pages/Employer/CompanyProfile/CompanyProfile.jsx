@@ -45,10 +45,10 @@ const CompanyProfile = () => {
                 {homeData.is_admin && (
                     <div className="absolute top-4 right-4">
                         <Button
-                            className="flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white rounded-full px-4 py-2 shadow-md transition-all hover:shadow-lg border border-white/30"
+                            className="flex text-xl items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white rounded-full px-6 py-4 shadow-md transition-all hover:shadow-lg border border-white/30"
                             onClick={handleEditProfile}
                         >
-                            <FaEdit className="h-4 w-4" />
+                            <FaEdit className="h-5 w-5" />
                             Edit Profile
                         </Button>
                     </div>

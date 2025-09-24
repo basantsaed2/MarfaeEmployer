@@ -93,6 +93,10 @@ const router = createBrowserRouter([
           { path: "add", element: <AddJob /> },
         ],
       },
+       {
+        path: "add_job",
+        element: <AddJob />
+      },
       {
         path: "drugs",
         children: [

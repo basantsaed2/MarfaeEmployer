@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"; // Import dialog components
-import { FiUpload, FiX, FiArrowLeft, FiGlobe, FiTwitter, FiFacebook, FiLinkedin } from "react-icons/fi";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { FiUpload, FiX, FiArrowLeft, FiGlobe, FiTwitter, FiFacebook, FiLinkedin, FiMail, FiPhone, FiUser, FiMapPin } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import { useGet } from "@/Hooks/UseGet";
 import FullPageLoader from "@/components/Loading";
@@ -20,23 +20,24 @@ const CompanyProfile = () => {
     const { postData, loadingPost, response } = usePost({ url: `${apiUrl}/employeer/assign-roles` });
     const [homeData, setHomeData] = useState('');
     const [companyDetails, setCompanyDetails] = useState('');
-    const [isDialogOpen, setIsDialogOpen] = useState(false); // State for dialog visibility
-    const [dialogMessage, setDialogMessage] = useState(''); // State for dialog message
+    const [employerDetails, setEmployerDetails] = useState('');
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [dialogMessage, setDialogMessage] = useState('');
 
     useEffect(() => {
         refetchHomeList();
     }, [refetchHomeList]);
 
     useEffect(() => {
-        if (HomeListData && HomeListData.company_details) {
+        if (HomeListData) {
             setHomeData(HomeListData);
-            setCompanyDetails(HomeListData.company_details);
+            setCompanyDetails(HomeListData.company_details || '');
+            setEmployerDetails(HomeListData.employeer || '');
         }
     }, [HomeListData]);
 
     // Handle button click to open dialog
     const handleOpenDialog = () => {
-        // Check if "user" role already exists
         if (homeData?.roles?.includes("user")) {
             setDialogMessage("You are already a user!");
             setIsDialogOpen(true);
@@ -52,12 +53,12 @@ const CompanyProfile = () => {
             try {
                 await postData({ roles: ["user","employeer"] });
                 setDialogMessage("User role assigned successfully!");
-                refetchHomeList(); // Refetch to update roles
+                refetchHomeList();
             } catch (error) {
                 setDialogMessage("Failed to assign user role. Please try again.");
             }
         } else {
-            setIsDialogOpen(false); // Close dialog if already a user
+            setIsDialogOpen(false);
         }
     };
 
@@ -119,6 +120,19 @@ const CompanyProfile = () => {
                     <div className="flex-1 text-center md:text-left">
                         <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">{companyDetails.name}</h1>
                         <p className="mt-2 text-lg opacity-90 max-w-2xl">{companyDetails.description}</p>
+                        
+                        {/* Location Information */}
+                        {(companyDetails.city || companyDetails.country) && (
+                            <div className="flex items-center justify-center md:justify-start gap-2 mt-3 text-white/90">
+                                <FiMapPin className="h-4 w-4" />
+                                <span className="text-sm">
+                                    {companyDetails.city?.name && companyDetails.country?.name 
+                                        ? `${companyDetails.city.name}, ${companyDetails.country.name}`
+                                        : companyDetails.city?.name || companyDetails.country?.name || ''}
+                                </span>
+                            </div>
+                        )}
+                        
                         <div className="flex justify-center md:justify-start space-x-4 mt-4">
                             {companyDetails.site_link && (
                                 <a href={companyDetails.site_link} target="_blank" rel="noopener noreferrer" className="hover:text-blue-200 transition-colors p-2 bg-white/10 rounded-full">
@@ -192,12 +206,113 @@ const CompanyProfile = () => {
                             <span className="font-semibold">{companyDetails.phone || "Not provided"}</span>
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-sm text-gray-500 font-medium">Address</span>
-                            <span className="font-semibold">{companyDetails.location_link || "Not provided"}</span>
+                            <span className="text-sm text-gray-500 font-medium">Location</span>
+                            <span className="font-semibold">
+                                {companyDetails.city?.name && companyDetails.country?.name 
+                                    ? `${companyDetails.city.name}, ${companyDetails.country.name}`
+                                    : companyDetails.location_link || "Not provided"}
+                            </span>
                         </div>
                         <div className="flex flex-col">
                             <span className="text-sm text-gray-500 font-medium">Established</span>
                             <span className="font-semibold">{companyDetails.established || "Not provided"}</span>
+                        </div>
+                        {companyDetails.city && (
+                            <div className="flex flex-col">
+                                <span className="text-sm text-gray-500 font-medium">City</span>
+                                <span className="font-semibold">{companyDetails.city.name || "Not provided"}</span>
+                            </div>
+                        )}
+                        {companyDetails.country && (
+                            <div className="flex flex-col">
+                                <span className="text-sm text-gray-500 font-medium">Country</span>
+                                <span className="font-semibold">{companyDetails.country.name || "Not provided"}</span>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Employer Details Section */}
+                    <div className="mt-8 pt-6 border-t border-gray-200">
+                        <h3 className="text-xl font-semibold text-gray-800 mb-4">Employer Details</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 text-gray-600">
+                            <div className="flex items-center gap-3">
+                                <FiUser className="h-5 w-5 text-blue-500" />
+                                <div className="flex flex-col">
+                                    <span className="text-sm text-gray-500 font-medium">Full Name</span>
+                                    <span className="font-semibold">{employerDetails.full_name || "Not provided"}</span>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <FiMail className="h-5 w-5 text-green-500" />
+                                <div className="flex flex-col">
+                                    <span className="text-sm text-gray-500 font-medium">Email</span>
+                                    <span className="font-semibold">{employerDetails.email || "Not provided"}</span>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <FiPhone className="h-5 w-5 text-purple-500" />
+                                <div className="flex flex-col">
+                                    <span className="text-sm text-gray-500 font-medium">Phone</span>
+                                    <span className="font-semibold">{employerDetails.phone || "Not provided"}</span>
+                                </div>
+                            </div>
+{/* 
+                            <div className="flex items-center gap-3">
+                                <div className="h-5 w-5 flex items-center justify-center text-red-500">
+                                    <span className="text-sm font-bold">S</span>
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-sm text-gray-500 font-medium">Status</span>
+                                    <span className={`font-semibold capitalize ${employerDetails.status === 'approved' ? 'text-green-600' : employerDetails.status === 'pending' ? 'text-yellow-600' : 'text-red-600'}`}>
+                                        {employerDetails.status || "Not provided"}
+                                    </span>
+                                </div>
+                            </div> */}
+                            <div className="flex items-center gap-3">
+                                <div className="h-5 w-5 flex items-center justify-center text-blue-500">
+                                    <span className="text-sm font-bold">R</span>
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-sm text-gray-500 font-medium">Role</span>
+                                    <span className="font-semibold capitalize">{employerDetails.role || "Not provided"}</span>
+                                </div>
+                            </div>
+                            
+                            {/* Employer Location Information */}
+                            {(employerDetails.company?.city || employerDetails.company?.country) && (
+                                <>
+                                    {employerDetails.company?.city && (
+                                        <div className="flex items-center gap-3">
+                                            <FiMapPin className="h-5 w-5 text-teal-500" />
+                                            <div className="flex flex-col">
+                                                <span className="text-sm text-gray-500 font-medium">City</span>
+                                                <span className="font-semibold">{employerDetails.company?.city?.name || "Not provided"}</span>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {employerDetails.company?.country && (
+                                        <div className="flex items-center gap-3">
+                                            <FiMapPin className="h-5 w-5 text-teal-500" />
+                                            <div className="flex flex-col">
+                                                <span className="text-sm text-gray-500 font-medium">Country</span>
+                                                <span className="font-semibold">{employerDetails.company?.country?.name || "Not provided"}</span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                            
+                            {/* <div className="flex items-center gap-3 sm:col-span-2">
+                                <div className="h-5 w-5 flex items-center justify-center text-gray-500">
+                                    <span className="text-sm font-bold">V</span>
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-sm text-gray-500 font-medium">Email Verification</span>
+                                    <span className={`font-semibold capitalize ${employerDetails.email_verified === 'verified' ? 'text-green-600' : 'text-red-600'}`}>
+                                        {employerDetails.email_verified || "Not provided"}
+                                    </span>
+                                </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>

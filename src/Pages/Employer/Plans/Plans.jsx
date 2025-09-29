@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, Pencil, Trash2, Star, CheckCircle } from "lucide-react";
+import { CheckCircle, Star } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useGet } from "@/Hooks/UseGet";
-import { useDelete } from "@/Hooks/useDelete";
 import { usePost } from "@/Hooks/UsePost";
-import DeleteDialog from "@/components/DeleteDialog";
 import FullPageLoader from "@/components/Loading";
 import {
     Dialog,
@@ -114,7 +112,6 @@ const Plans = () => {
     const getFeatureName = (key) => {
         const featureNames = {
             'cv_number': 'CV Access',
-            'job_add': 'Job Posts',
             'featured_job': 'Featured Jobs',
             'duration': 'Duration (days)',
             'support': 'Support',
@@ -218,27 +215,29 @@ const Plans = () => {
 
                     {/* Features List */}
                     <ul className="space-y-2 mb-6 text-sm text-gray-600 min-h-[150px]">
-                        {Object.entries(plan.features).map(([key, value], index) => (
-                            <li key={index} className="flex items-start">
-                                <svg 
-                                    className="w-4 h-4 text-blue-500 mt-1 mr-2 flex-shrink-0" 
-                                    fill="none" 
-                                    stroke="currentColor" 
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path 
-                                        strokeLinecap="round" 
-                                        strokeLinejoin="round" 
-                                        strokeWidth="2" 
-                                        d="M5 13l4 4L19 7" 
-                                    />
-                                </svg>
-                                <span>
-                                    <strong>{getFeatureName(key)}:</strong>{" "}
-                                    {typeof value === "object" ? value.value || "—" : value}
-                                </span>
-                            </li>
-                        ))}
+                        {Object.entries(plan.features)
+                            .filter(([key]) => key !== 'job_add') // Exclude job_add feature
+                            .map(([key, value], index) => (
+                                <li key={index} className="flex items-start">
+                                    <svg 
+                                        className="w-4 h-4 text-blue-500 mt-1 mr-2 flex-shrink-0" 
+                                        fill="none" 
+                                        stroke="currentColor" 
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path 
+                                            strokeLinecap="round" 
+                                            strokeLinejoin="round" 
+                                            strokeWidth="2" 
+                                            d="M5 13l4 4L19 7" 
+                                        />
+                                    </svg>
+                                    <span>
+                                        <strong>{getFeatureName(key)}:</strong>{" "}
+                                        {typeof value === "object" ? value.value || "—" : value}
+                                    </span>
+                                </li>
+                            ))}
                     </ul>
                 </div>
 

@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import "react-toastify/dist/ReactToastify.css";
 import { usePost } from "@/Hooks/UsePost";
-import { FaStethoscope, FaHeartbeat, FaUserMd, FaSyringe,FaEye, FaEyeSlash, FaBriefcase, FaUsers } from "react-icons/fa";
+import { FaStethoscope, FaHeartbeat, FaUserMd, FaSyringe, FaEye, FaEyeSlash, FaBriefcase, FaUsers } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
 const LoginEmployer = () => {
@@ -24,11 +24,11 @@ const LoginEmployer = () => {
   const { postData, loadingPost, response } = usePost({
     url: `${apiUrl}/login`,
   });
-    // Tab state
+  // Tab state
   const [activeTab, setActiveTab] = useState("employer");
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -54,19 +54,43 @@ const LoginEmployer = () => {
     postData(body);
   };
 
+  // useEffect(() => {
+  //   if (!loadingPost && response) {
+  //     if (response.data.message === "Employeer account is not active yet") {
+  //       setIsModalOpen(true);
+  //     } else if (response.status === 200 && response.data?.user?.role === "employeer") {
+  //       toast.success("Login successfully");
+  //       dispatch(setEmployer(response?.data));
+  //       localStorage.setItem("employer", JSON.stringify(response?.data));
+  //       localStorage.setItem("token", response?.data.token);
+  //       const redirectTo = new URLSearchParams(location.search).get("redirect");
+  //       navigate(redirectTo || "/");
+  //     } else if (response.status === 200 && response.data?.user?.role !== "employeer") {
+  //       toast.error("You do not have employer role");
+  //     }
+  //   }
+  // }, [response, loadingPost, navigate, dispatch]);
+
   useEffect(() => {
     if (!loadingPost && response) {
       if (response.data.message === "Employeer account is not active yet") {
         setIsModalOpen(true);
-      } else if (response.status === 200 && response.data?.user?.role === "employeer") {
-        toast.success("Login successfully");
-        dispatch(setEmployer(response?.data));
-        localStorage.setItem("employer", JSON.stringify(response?.data));
-        localStorage.setItem("token", response?.data.token);
-        const redirectTo = new URLSearchParams(location.search).get("redirect");
-        navigate(redirectTo || "/");
-      } else if (response.status === 200 && response.data?.user?.role !== "employeer") {
-        toast.error("You do not have employer role");
+      } else if (response.status === 200) {
+        // normalize roles
+        let roles = response.data?.user?.roles_array
+          || response.data?.user?.role?.split(",")
+          || [];
+
+        if (roles.includes("employeer")) {
+          toast.success("Login successfully");
+          dispatch(setEmployer(response?.data));
+          localStorage.setItem("employer", JSON.stringify(response?.data));
+          localStorage.setItem("token", response?.data.token);
+          const redirectTo = new URLSearchParams(location.search).get("redirect");
+          navigate(redirectTo || "/");
+        } else {
+          toast.error("You do not have employer role");
+        }
       }
     }
   }, [response, loadingPost, navigate, dispatch]);
@@ -75,7 +99,7 @@ const LoginEmployer = () => {
     setIsModalOpen(false);
   };
 
-    const togglePasswordVisibility = () => {
+  const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 

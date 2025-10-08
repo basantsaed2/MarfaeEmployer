@@ -37,7 +37,8 @@ import {
     Check,
     AlertCircle,
     FileSpreadsheet,
-    Workflow
+    Workflow,
+    Stars
 } from "lucide-react";
 
 const Cv = () => {
@@ -137,7 +138,8 @@ const Cv = () => {
         { value: 'pending', label: 'Pending', count: dataCV?.applications?.filter(a => a.status === 'pending').length || 0 },
         { value: 'reviewed', label: 'Viewed', count: dataCV?.applications?.filter(a => a.status === 'reviewed').length || 0 },
         { value: 'accepted', label: 'Accepted', count: dataCV?.applications?.filter(a => a.status === 'accepted').length || 0 },
-        { value: 'rejected', label: 'Rejected', count: dataCV?.applications?.filter(a => a.status === 'rejected').length || 0 }
+        { value: 'rejected', label: 'Not Shortlisted', count: dataCV?.applications?.filter(a => a.status === 'rejected').length || 0 },
+        { value: 'recommended', label: 'Recommended', count: dataCV?.applications?.filter(a => a.status === 'recommended').length || 0 }
     ];
 
     // Experience options
@@ -158,7 +160,7 @@ const Cv = () => {
     // Handle status change functions
     const handleStatusChange = async (application, newStatus) => {
         let url, successMessage, data = {};
-        
+
         switch (newStatus) {
             case 'reviewed':
                 url = `${apiUrl}/employeer/viewed-application`;
@@ -173,6 +175,11 @@ const Cv = () => {
             case 'rejected':
                 url = `${apiUrl}/employeer/reject-application`;
                 successMessage = 'Application rejected successfully';
+                data = { application_id: application.id };
+                break;
+            case 'recommended':
+                url = `${apiUrl}/employeer/recommended-application`;
+                successMessage = 'Application recommended successfully';
                 data = { application_id: application.id };
                 break;
             default:
@@ -205,24 +212,10 @@ const Cv = () => {
                 return 'bg-green-100 text-green-800 border-green-200';
             case 'rejected':
                 return 'bg-red-100 text-red-800 border-red-200';
+            case 'recommended':
+                return 'bg-purple-100 text-purple-800 border-purple-200';
             default:
                 return 'bg-gray-100 text-gray-800 border-gray-200';
-        }
-    };
-
-    // Get status icon
-    const getStatusIcon = (status) => {
-        switch (status) {
-            case 'pending':
-                return <Clock4 className="h-4 w-4 mr-1" />;
-            case 'reviewed':
-                return <Eye className="h-4 w-4 mr-1" />;
-            case 'accepted':
-                return <CheckCircle className="h-4 w-4 mr-1" />;
-            case 'rejected':
-                return <XCircle className="h-4 w-4 mr-1" />;
-            default:
-                return <Circle className="h-4 w-4 mr-1" />;
         }
     };
 
@@ -250,6 +243,8 @@ const Cv = () => {
                 return 'Are you sure you want to accept this application?';
             case 'rejected':
                 return 'Are you sure you want to reject this application?';
+            case 'recommended':
+                return 'Are you sure you want to recommended this application?';
             default:
                 return 'Are you sure you want to perform this action?';
         }
@@ -264,6 +259,8 @@ const Cv = () => {
                 return 'bg-green-600 hover:bg-green-700';
             case 'rejected':
                 return 'bg-red-600 hover:bg-red-700';
+            case 'recommended':
+                return 'bg-purple-600 hover:bg-purple-700';
             default:
                 return 'bg-gray-600 hover:bg-gray-700';
         }
@@ -272,16 +269,17 @@ const Cv = () => {
     // Status dropdown component
     const StatusDropdown = ({ application, size = "default" }) => {
         const [isOpen, setIsOpen] = useState(false);
-        
+
         const statusOptions = [
             { value: 'pending', label: 'Pending', icon: <Clock4 className="h-4 w-4" /> },
             { value: 'reviewed', label: 'Viewed', icon: <Eye className="h-4 w-4" /> },
             { value: 'accepted', label: 'Accepted', icon: <CheckCircle className="h-4 w-4" /> },
-            { value: 'rejected', label: 'Rejected', icon: <XCircle className="h-4 w-4" /> }
+            { value: 'rejected', label: 'Not Shortlisted', icon: <XCircle className="h-4 w-4" /> },
+            { value: 'recommended', label: 'Recommended', icon: <Stars className="h-4 w-4" /> }
         ];
-        
+
         const currentStatus = statusOptions.find(opt => opt.value === application.status);
-        
+
         return (
             <div className="relative">
                 <button
@@ -294,7 +292,7 @@ const Cv = () => {
                     </span>
                     <ChevronDown className="h-4 w-4 ml-1" />
                 </button>
-                
+
                 {isOpen && (
                     <div className="absolute z-10 mt-1 w-40 rounded-md bg-white shadow-lg border border-gray-200">
                         <div className="py-1">
@@ -359,7 +357,7 @@ const Cv = () => {
                 </div>
 
                 {/* Stats Overview */}
-                <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 mb-8">
                     <div className="bg-white rounded-lg shadow p-4 border-l-4 border-indigo-500">
                         <h3 className="text-sm font-medium text-gray-500">Total Applications</h3>
                         <p className="text-2xl font-bold text-gray-800">{dataCV?.applications?.length || 0}</p>
@@ -383,9 +381,15 @@ const Cv = () => {
                         </p>
                     </div>
                     <div className="bg-white rounded-lg shadow p-4 border-l-4 border-red-500">
-                        <h3 className="text-sm font-medium text-gray-500">Rejected</h3>
+                        <h3 className="text-sm font-medium text-gray-500">Not Shortlisted</h3>
                         <p className="text-2xl font-bold text-gray-800">
                             {dataCV?.applications?.filter(a => a.status === 'rejected').length || 0}
+                        </p>
+                    </div>
+                    <div className="bg-white rounded-lg shadow p-4 border-l-4 border-purple-500">
+                        <h3 className="text-sm font-medium text-gray-500">Recommended</h3>
+                        <p className="text-2xl font-bold text-gray-800">
+                            {dataCV?.applications?.filter(a => a.status === 'recommended').length || 0}
                         </p>
                     </div>
                 </div>
@@ -803,7 +807,7 @@ const Cv = () => {
                                 {selectedApplication && pendingAction && getActionMessage(pendingAction)}
                             </DialogDescription>
                         </DialogHeader>
-                        
+
                         {selectedApplication && (
                             <div className="bg-gray-50 rounded-lg p-4 mb-6">
                                 <div className="flex items-center gap-3">

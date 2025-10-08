@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
-import { BriefcaseBusiness, SquareChartGantt } from "lucide-react";
+import { BriefcaseBusiness, SquareChartGantt ,FileUser} from "lucide-react";
 import { PiSignOutBold } from "react-icons/pi";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,7 +35,7 @@ const navItems = [
     { label: "Add Job", to: "/add_job", icon: <MdOutlineAddToQueue size={20} /> },
     { label: "Drugs", to: "/drugs", icon: <GiPill className="stroke-1" size={20} /> },
     { label: "Plans", to: "/plans", icon: <SquareChartGantt className="stroke-2" size={20} /> },
-    { label: "Search CV", to: "/search_cv", icon: <TbReportSearch size={20} /> },
+    { label: "Applied Applications", to: "/applied_applications", icon: <FileUser size={20} /> },
     { label: "Assign CV", to: "/my_cv", icon: <TbReportSearch size={20} /> },
     { label: "Search User", to: "/search_user", icon: <MdOutlinePersonSearch size={20} /> },
     { label: "Change Password", to: "/change_password", icon: <RiLockPasswordLine size={20} /> },

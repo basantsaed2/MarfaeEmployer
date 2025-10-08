@@ -105,7 +105,7 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "search_cv",
+        path: "applied_applications",
         element: <Cv />
       },
        {

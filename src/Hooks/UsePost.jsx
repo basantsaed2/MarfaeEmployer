@@ -14,14 +14,14 @@ export const usePost = ({ url, login = false, type = false }) => {
       const contentType = type ? "application/json" : "multipart/form-data";
       const config = !login && employer?.token
         ? {
-            headers: {
-              "Content-Type": contentType,
-              Authorization: `Bearer ${employer?.token || ""}`,
-            },
-          }
+          headers: {
+            "Content-Type": contentType,
+            Authorization: `Bearer ${employer?.token || ""}`,
+          },
+        }
         : {
-            headers: { "Content-Type": contentType },
-          };
+          headers: { "Content-Type": contentType },
+        };
 
       const response = await axios.post(url, data, config);
 
@@ -55,14 +55,15 @@ export const usePost = ({ url, login = false, type = false }) => {
         } else {
           toast.error(error.response.data.errors);
         }
-      }  else if (error.response.data.error){
-          toast.error(error.response.data.error);
-      }else if (!error?.response?.data?.message) {
+      } else if (error.response.data.error) {
+        toast.error(error.response.data.error);
+      } else {
         toast.error("An unknown error occurred.");
       }
 
       // Still set the response for error cases to allow component to handle it
       setResponse(error.response);
+      return error.response;
     } finally {
       setLoadingPost(false);
     }

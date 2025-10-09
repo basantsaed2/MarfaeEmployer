@@ -60,9 +60,9 @@ const RegisterEmployer = () => {
 
   useEffect(() => {
     if (!loadingPost && response) {
-      console.log("response",response)
-      if (response.status === 200 ||  response.status === 201) {
+      if (response.status === 200 || response.status === 201) {
         toast.success(response?.data?.message);
+        navigate("/login");
       } else {
         toast.error(response?.data?.message || "Registration failed");
       }
@@ -130,7 +130,7 @@ const RegisterEmployer = () => {
     setShowPassword(!showPassword);
   };
 
-    const selectStyles = {
+  const selectStyles = {
     control: (base, state) => ({
       ...base,
       borderRadius: "0.75rem",
@@ -148,7 +148,7 @@ const RegisterEmployer = () => {
     }),
     placeholder: (base) => ({
       ...base,
-      color:'#161D6F',
+      color: '#161D6F',
     }),
     menu: (base) => ({
       ...base,

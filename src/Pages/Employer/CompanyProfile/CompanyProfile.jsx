@@ -51,7 +51,7 @@ const CompanyProfile = () => {
     const handleConfirm = async () => {
         if (!homeData?.roles?.includes("user")) {
             try {
-                await postData({ roles: ["user","employeer"] });
+                await postData({ roles: ["user", "employeer"] });
                 setDialogMessage("User role assigned successfully!");
                 refetchHomeList();
             } catch (error) {
@@ -72,6 +72,14 @@ const CompanyProfile = () => {
     const handleEditProfile = () => {
         navigate("/edit_company", { state: { companyDetails } });
     };
+
+    useEffect(() => {
+        if (!loadingPost && response && response.status === 200) {
+            console.log(response)
+                // Redirect to mrfae.com on success
+                window.location.href = 'https://mrfae.com';
+        }
+    }, [response, loadingPost]);
 
     if (isLoading || loadingHomeList) {
         return <FullPageLoader />;
@@ -120,19 +128,19 @@ const CompanyProfile = () => {
                     <div className="flex-1 text-center md:text-left">
                         <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">{companyDetails.name}</h1>
                         <p className="mt-2 text-lg opacity-90 max-w-2xl">{companyDetails.description}</p>
-                        
+
                         {/* Location Information */}
                         {(companyDetails.city || companyDetails.country) && (
                             <div className="flex items-center justify-center md:justify-start gap-2 mt-3 text-white/90">
                                 <FiMapPin className="h-4 w-4" />
                                 <span className="text-sm">
-                                    {companyDetails.city?.name && companyDetails.country?.name 
+                                    {companyDetails.city?.name && companyDetails.country?.name
                                         ? `${companyDetails.city.name}, ${companyDetails.country.name}`
                                         : companyDetails.city?.name || companyDetails.country?.name || ''}
                                 </span>
                             </div>
                         )}
-                        
+
                         <div className="flex justify-center md:justify-start space-x-4 mt-4">
                             {companyDetails.site_link && (
                                 <a href={companyDetails.site_link} target="_blank" rel="noopener noreferrer" className="hover:text-blue-200 transition-colors p-2 bg-white/10 rounded-full">
@@ -208,7 +216,7 @@ const CompanyProfile = () => {
                         <div className="flex flex-col">
                             <span className="text-sm text-gray-500 font-medium">Location</span>
                             <span className="font-semibold">
-                                {companyDetails.city?.name && companyDetails.country?.name 
+                                {companyDetails.city?.name && companyDetails.country?.name
                                     ? `${companyDetails.city.name}, ${companyDetails.country.name}`
                                     : companyDetails.location_link || "Not provided"}
                             </span>
@@ -256,7 +264,7 @@ const CompanyProfile = () => {
                                     <span className="font-semibold">{employerDetails.phone || "Not provided"}</span>
                                 </div>
                             </div>
-{/* 
+                            {/* 
                             <div className="flex items-center gap-3">
                                 <div className="h-5 w-5 flex items-center justify-center text-red-500">
                                     <span className="text-sm font-bold">S</span>
@@ -277,7 +285,7 @@ const CompanyProfile = () => {
                                     <span className="font-semibold capitalize">{employerDetails.role || "Not provided"}</span>
                                 </div>
                             </div>
-                            
+
                             {/* Employer Location Information */}
                             {(employerDetails.company?.city || employerDetails.company?.country) && (
                                 <>
@@ -301,7 +309,7 @@ const CompanyProfile = () => {
                                     )}
                                 </>
                             )}
-                            
+
                             {/* <div className="flex items-center gap-3 sm:col-span-2">
                                 <div className="h-5 w-5 flex items-center justify-center text-gray-500">
                                     <span className="text-sm font-bold">V</span>

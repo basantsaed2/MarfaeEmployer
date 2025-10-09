@@ -12,12 +12,33 @@ import image from "../../assets/Login.png";
 import "react-toastify/dist/ReactToastify.css";
 import { usePost } from "@/Hooks/UsePost";
 import { motion, AnimatePresence } from "framer-motion";
+import { useGet } from "@/Hooks/UseGet";
+import Select from 'react-select';
 
 const AddNewCompany = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
+  const { refetch: refetchSpecialization, loading: loadingSpecialization, data: specializationData } = useGet({
+    url: `${apiUrl}/get-specialization-experience`,
+  });
+  const { refetch: refetchRegion, loading: loadingRegion, data: regionData } = useGet({
+    url: `${apiUrl}/city-country`,
+  });
+  const { refetch: refetchCompanyType, loading: loadingCompanyType, data: companyTypeData } = useGet({
+    url: `${apiUrl}/get-company-types`,
+  });
   const { postData, loadingPost, response } = usePost({ url: `${apiUrl}/addCompanyNewData` });
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [specializationOptions, setSpecializationOptions] = useState([]);
+  const [companyTypeOptions, setCompanyTypeOptions] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [countries, setCountries] = useState([]);
+  const [filteredCities, setFilteredCities] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [selectedCity, setSelectedCity] = useState(null);
+  const [selectedCompanyType, setSelectedCompanyType] = useState(null);
+  const [selectedSpecializations, setSelectedSpecializations] = useState([]);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -29,14 +50,112 @@ const AddNewCompany = () => {
     facebook_link: "",
     linkedin_link: "",
     site_link: "",
+    city_id: "",
+    country_id: "",
+    company_type_id: "",
+    specializations: []
   });
 
   const [imageFile, setImageFile] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
+  const [imageBase64, setImageBase64] = useState("");
 
   useEffect(() => {
-    if (!loadingPost && response) {
-      toast.success("Company added successfully!");
+    refetchSpecialization();
+    refetchRegion();
+    refetchCompanyType();
+  }, [refetchSpecialization, refetchRegion, refetchCompanyType]);
+
+  useEffect(() => {
+    if (specializationData?.data) {
+      const formattedSpecialization =
+        specializationData.data.specializations?.map((u) => ({
+          label: u.name || "—",
+          value: u.id.toString(),
+        })) || [];
+      setSpecializationOptions(formattedSpecialization);
+    }
+  }, [specializationData]);
+
+  useEffect(() => {
+    if (regionData?.countries && regionData?.cities) {
+      const formattedCountries = regionData.countries.map((country) => ({
+        label: country.name,
+        value: country.id.toString(),
+      }));
+      const formattedCities = regionData.cities.map((city) => ({
+        label: city.name,
+        value: city.id.toString(),
+        countryId: city.country_id?.toString(),
+      }));
+      setCountries(formattedCountries);
+      setCities(formattedCities);
+    }
+  }, [regionData]);
+
+  useEffect(() => {
+    if (companyTypeData?.company_types) {
+      const formattedTypes = companyTypeData.company_types.map((type) => ({
+        label: type.name,
+        value: type.id.toString(),
+      }));
+      setCompanyTypeOptions(formattedTypes);
+    }
+  }, [companyTypeData]);
+
+  // Filter cities when country selection changes
+  useEffect(() => {
+    if (selectedCountry && cities.length > 0) {
+      const filtered = cities.filter(city => city.countryId === selectedCountry.value);
+      setFilteredCities(filtered);
+      setSelectedCity(null);
+      setFormData(prev => ({
+        ...prev,
+        country_id: selectedCountry.value,
+        city_id: ""
+      }));
+    } else {
+      setFilteredCities([]);
+      setSelectedCity(null);
+      setFormData(prev => ({
+        ...prev,
+        country_id: "",
+        city_id: ""
+      }));
+    }
+  }, [selectedCountry, cities]);
+
+  // Update form data when city is selected
+  useEffect(() => {
+    if (selectedCity) {
+      setFormData(prev => ({
+        ...prev,
+        city_id: selectedCity.value
+      }));
+    }
+  }, [selectedCity]);
+
+  // Update form data when company type is selected
+  useEffect(() => {
+    if (selectedCompanyType) {
+      setFormData(prev => ({
+        ...prev,
+        company_type_id: selectedCompanyType.value
+      }));
+    }
+  }, [selectedCompanyType]);
+
+  // Update form data when specializations are selected
+  useEffect(() => {
+    const specializationIds = selectedSpecializations.map(spec => spec.value);
+    setFormData(prev => ({
+      ...prev,
+      specializations: specializationIds
+    }));
+  }, [selectedSpecializations]);
+
+  useEffect(() => {
+    if (!loadingPost && response && response.status === 200) {
       const timer = setTimeout(() => {
         navigate("/register");
       }, 2000);
@@ -47,10 +166,18 @@ const AddNewCompany = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        toast.error("Please select a valid image file");
+        return;
+      }
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setImageFile(file);
         setPreviewImage(reader.result);
+        // Send the complete data URL with prefix
+        setImageBase64(reader.result); // Keep the full data URL including prefix
       };
       reader.readAsDataURL(file);
     }
@@ -67,23 +194,73 @@ const AddNewCompany = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.email || !formData.phone || !formData.description || !imageFile) {
+    if (!formData.name || !formData.email || !formData.phone || !formData.description || !imageBase64 || !selectedCompanyType) {
       toast.error("Please fill in all required fields");
       return;
     }
 
-    const body = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      body.append(key, value);
-    });
-    body.append("image", imageFile);
+    // Prepare the data to send
+    const requestData = {
+      ...formData,
+      image: imageBase64, // Send as base64 string
+    };
 
-    await postData(body, "Company added successfully!");
+    await postData(requestData, "Company added successfully!");
   };
 
   const removeImage = () => {
     setImageFile(null);
     setPreviewImage(null);
+    setImageBase64("");
+  };
+
+  const customSelectStyles = {
+    control: (base, state) => ({
+      ...base,
+      border: '1px solid rgba(59, 130, 246, 0.5)',
+      borderRadius: '12px',
+      padding: '8px 4px',
+      backgroundColor: 'rgba(255, 255, 255, 0.7)',
+      '&:hover': {
+        borderColor: 'rgba(59, 130, 246, 0.7)',
+      },
+      boxShadow: state.isFocused ? '0 0 0 2px rgba(59, 130, 246, 0.2)' : 'none',
+    }),
+    menu: (base) => ({
+      ...base,
+      borderRadius: '12px',
+      zIndex: 9999, // Increased z-index to appear above other elements
+    }),
+    menuPortal: (base) => ({
+      ...base,
+      zIndex: 9999,
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isSelected ? '#3b82f6' : state.isFocused ? '#dbeafe' : 'white',
+      color: state.isSelected ? 'white' : 'black',
+      ':active': {
+        backgroundColor: state.isSelected ? '#3b82f6' : '#dbeafe',
+      }
+    }),
+    multiValue: (base) => ({
+      ...base,
+      backgroundColor: '#dbeafe',
+      borderRadius: '6px',
+    }),
+    multiValueLabel: (base) => ({
+      ...base,
+      color: '#1e40af',
+      fontWeight: '500',
+    }),
+    multiValueRemove: (base) => ({
+      ...base,
+      color: '#1e40af',
+      ':hover': {
+        backgroundColor: '#93c5fd',
+        color: '#1e3a8a',
+      },
+    }),
   };
 
   return (
@@ -231,21 +408,23 @@ const AddNewCompany = () => {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Company Type */}
                     <motion.div
                       className="space-y-2"
                       whileHover={{ scale: 1.02 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <Label htmlFor="location_link" className="text-gray-700">Location</Label>
-                      <Input
-                        id="location_link"
-                        name="location_link"
-                        type="text"
-                        placeholder="Address, City, Country"
-                        value={formData.location_link}
-                        onChange={handleChange}
-                        className="w-full p-3 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent bg-white/70 placeholder-bg-primary/70"
-                        disabled={loadingPost}
+                      <Label className="text-gray-700">Company Type *</Label>
+                      <Select
+                        options={companyTypeOptions}
+                        value={selectedCompanyType}
+                        onChange={setSelectedCompanyType}
+                        placeholder="Select Company Type"
+                        isDisabled={loadingPost || loadingCompanyType}
+                        isLoading={loadingCompanyType}
+                        styles={customSelectStyles}
+                        menuPortalTarget={document.body}
+                        menuPosition="fixed"
                       />
                     </motion.div>
 
@@ -267,6 +446,87 @@ const AddNewCompany = () => {
                       />
                     </motion.div>
                   </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Country */}
+                    <motion.div
+                      className="space-y-2"
+                      whileHover={{ scale: 1.02 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Label className="text-gray-700">Country *</Label>
+                      <Select
+                        options={countries}
+                        value={selectedCountry}
+                        onChange={setSelectedCountry}
+                        placeholder="Select Country"
+                        isDisabled={loadingPost || loadingRegion}
+                        isLoading={loadingRegion}
+                        styles={customSelectStyles}
+                        menuPortalTarget={document.body}
+                        menuPosition="fixed"
+                      />
+                    </motion.div>
+
+                    {/* City */}
+                    <motion.div
+                      className="space-y-2"
+                      whileHover={{ scale: 1.02 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Label className="text-gray-700">City *</Label>
+                      <Select
+                        options={filteredCities}
+                        value={selectedCity}
+                        onChange={setSelectedCity}
+                        placeholder={selectedCountry ? "Select City" : "Select Country First"}
+                        isDisabled={loadingPost || loadingRegion || !selectedCountry}
+                        isLoading={loadingRegion}
+                        styles={customSelectStyles}
+                        menuPortalTarget={document.body}
+                        menuPosition="fixed"
+                      />
+                    </motion.div>
+                  </div>
+
+                  {/* Specializations */}
+                  <motion.div
+                    className="space-y-2"
+                    whileHover={{ scale: 1.02 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Label className="text-gray-700">Specializations</Label>
+                    <Select
+                      options={specializationOptions}
+                      value={selectedSpecializations}
+                      onChange={setSelectedSpecializations}
+                      placeholder="Select Specializations"
+                      isMulti
+                      isDisabled={loadingPost || loadingSpecialization}
+                      isLoading={loadingSpecialization}
+                      styles={customSelectStyles}
+                      menuPortalTarget={document.body}
+                      menuPosition="fixed"
+                    />
+                  </motion.div>
+
+                  <motion.div
+                    className="space-y-2"
+                    whileHover={{ scale: 1.02 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Label htmlFor="location_link" className="text-gray-700">Location Address</Label>
+                    <Input
+                      id="location_link"
+                      name="location_link"
+                      type="text"
+                      placeholder="Full Address"
+                      value={formData.location_link}
+                      onChange={handleChange}
+                      className="w-full p-3 border border-bg-primary/50 rounded-xl focus:ring-2 focus:ring-bg-primary focus:border-transparent bg-white/70 placeholder-bg-primary/70"
+                      disabled={loadingPost}
+                    />
+                  </motion.div>
 
                   <motion.div
                     className="space-y-2"

@@ -57,7 +57,7 @@ export const usePost = ({ url, login = false, type = false }) => {
         }
       } else if (error.response.data.error) {
         toast.error(error.response.data.error);
-      } else {
+      } else if (!skipToastMessage) {
         toast.error("An unknown error occurred.");
       }
 

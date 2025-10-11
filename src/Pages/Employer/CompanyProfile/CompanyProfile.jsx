@@ -39,10 +39,10 @@ const CompanyProfile = () => {
     // Handle button click to open dialog
     const handleOpenDialog = () => {
         if (homeData?.roles?.includes("user")) {
-            setDialogMessage("You are already a user!");
+            setDialogMessage("You are already a user! Redirecting to user dashboard...");
             setIsDialogOpen(true);
         } else {
-            setDialogMessage("Are you sure you want to be a user?");
+            setDialogMessage("Are you sure you want to become a user? This will add user role to your account.");
             setIsDialogOpen(true);
         }
     };
@@ -52,13 +52,60 @@ const CompanyProfile = () => {
         if (!homeData?.roles?.includes("user")) {
             try {
                 await postData({ roles: ["user", "employeer"] });
-                setDialogMessage("User role assigned successfully!");
+                setDialogMessage("User role assigned successfully! Preparing your user account...");
                 refetchHomeList();
             } catch (error) {
                 setDialogMessage("Failed to assign user role. Please try again.");
             }
         } else {
+            // If already has user role, prepare and redirect
+            prepareAndRedirectToUser();
+        }
+    };
+
+    // Simple base64 encoding
+    const encodeData = (data) => {
+        return btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+    };
+
+    // Prepare auth data and redirect to user domain
+    const prepareAndRedirectToUser = () => {
+        try {
+            const token = localStorage.getItem("token");
+            const employerData = localStorage.getItem("employer");
+            
+            if (!token || !employerData) {
+                setDialogMessage("Authentication data not found. Please login again.");
+                return;
+            }
+
+            // Parse employer data - this is the exact structure you want to send
+            const parsedData = JSON.parse(employerData);
+            
+            // Create the exact data structure you specified
+            const userAuthData = {
+                token: token,
+                user: {
+                    ...parsedData.user, // This contains id, country_id, city_id, first_name, etc.
+                    token: token,
+                    roles_array: ["employeer", "user"],
+                    role: "employeer,user"
+                }
+            };
+
+            console.log("Sending auth data:", userAuthData);
+
+            // Encode the data for URL
+            const encodedData = encodeData(userAuthData);
+            
+            // Redirect to user domain with encoded data
+            const userUrl = `https://mrfae.com/?auth=data&d=${encodedData}`;
+            window.open(userUrl, '_blank');
             setIsDialogOpen(false);
+            
+        } catch (error) {
+            console.error('Error preparing user auth:', error);
+            setDialogMessage("Error preparing authentication data. Please try again.");
         }
     };
 
@@ -73,11 +120,34 @@ const CompanyProfile = () => {
         navigate("/edit_company", { state: { companyDetails } });
     };
 
+    // Handle successful role assignment response
     useEffect(() => {
         if (!loadingPost && response && response.status === 200) {
-            console.log(response)
-                // Redirect to mrfae.com on success
-                window.location.href = 'https://mrfae.com';
+            console.log("Role assignment response:", response);
+            
+            // Update local storage with new roles
+            const currentEmployerData = localStorage.getItem("employer");
+            if (currentEmployerData) {
+                try {
+                    const employerData = JSON.parse(currentEmployerData);
+                    const updatedData = {
+                        ...employerData,
+                        user: {
+                            ...employerData.user,
+                            roles_array: ["employeer", "user"],
+                            role: "employeer,user"
+                        }
+                    };
+                    localStorage.setItem("employer", JSON.stringify(updatedData));
+                    
+                    // Prepare and redirect after role assignment
+                    setTimeout(() => {
+                        prepareAndRedirectToUser();
+                    }, 1500);
+                } catch (error) {
+                    console.error("Error updating local storage:", error);
+                }
+            }
         }
     }, [response, loadingPost]);
 
@@ -103,11 +173,11 @@ const CompanyProfile = () => {
 
                     {/* Become User Button */}
                     <Button
-                        className="flex text-xl items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full px-6 py-4 shadow-md transition-all hover:shadow-lg border border-white/30"
+                        className="flex text-xl items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 py-4 shadow-md transition-all hover:shadow-lg border border-white/30"
                         onClick={handleOpenDialog}
                         disabled={loadingPost}
                     >
-                        Become User
+                        {loadingPost ? "Processing..." : "Become User"}
                     </Button>
                 </div>
 
@@ -180,19 +250,22 @@ const CompanyProfile = () => {
                     </DialogHeader>
                     <p>{dialogMessage}</p>
                     <DialogFooter>
-                        {dialogMessage === "Are you sure you want to be a user?" && (
+                        {dialogMessage === "Are you sure you want to become a user? This will add user role to your account." && (
                             <>
                                 <Button variant="outline" onClick={handleCloseDialog}>
                                     Cancel
                                 </Button>
                                 <Button onClick={handleConfirm} disabled={loadingPost}>
-                                    Sure
+                                    {loadingPost ? "Processing..." : "Yes, Become User"}
                                 </Button>
                             </>
                         )}
-                        {(dialogMessage === "You are already a user!" ||
-                            dialogMessage === "User role assigned successfully!" ||
-                            dialogMessage === "Failed to assign user role. Please try again.") && (
+                        {(dialogMessage.includes("Redirecting to user dashboard") ||
+                            dialogMessage.includes("User role assigned successfully") ||
+                            dialogMessage.includes("Preparing your user account") ||
+                            dialogMessage === "Failed to assign user role. Please try again." ||
+                            dialogMessage === "Authentication data not found. Please login again." ||
+                            dialogMessage === "Error preparing authentication data. Please try again.") && (
                                 <Button onClick={handleCloseDialog}>OK</Button>
                             )}
                     </DialogFooter>
@@ -264,18 +337,6 @@ const CompanyProfile = () => {
                                     <span className="font-semibold">{employerDetails.phone || "Not provided"}</span>
                                 </div>
                             </div>
-                            {/* 
-                            <div className="flex items-center gap-3">
-                                <div className="h-5 w-5 flex items-center justify-center text-red-500">
-                                    <span className="text-sm font-bold">S</span>
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-sm text-gray-500 font-medium">Status</span>
-                                    <span className={`font-semibold capitalize ${employerDetails.status === 'approved' ? 'text-green-600' : employerDetails.status === 'pending' ? 'text-yellow-600' : 'text-red-600'}`}>
-                                        {employerDetails.status || "Not provided"}
-                                    </span>
-                                </div>
-                            </div> */}
                             <div className="flex items-center gap-3">
                                 <div className="h-5 w-5 flex items-center justify-center text-blue-500">
                                     <span className="text-sm font-bold">R</span>
@@ -309,18 +370,6 @@ const CompanyProfile = () => {
                                     )}
                                 </>
                             )}
-
-                            {/* <div className="flex items-center gap-3 sm:col-span-2">
-                                <div className="h-5 w-5 flex items-center justify-center text-gray-500">
-                                    <span className="text-sm font-bold">V</span>
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-sm text-gray-500 font-medium">Email Verification</span>
-                                    <span className={`font-semibold capitalize ${employerDetails.email_verified === 'verified' ? 'text-green-600' : 'text-red-600'}`}>
-                                        {employerDetails.email_verified || "Not provided"}
-                                    </span>
-                                </div>
-                            </div> */}
                         </div>
                     </div>
                 </div>

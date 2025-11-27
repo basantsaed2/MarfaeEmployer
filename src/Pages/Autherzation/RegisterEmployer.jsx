@@ -1,19 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
-import { setEmployer } from "../../Store/authSlice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
 import Select from "react-select";
 import "react-toastify/dist/ReactToastify.css";
 import { usePost } from "@/Hooks/UsePost";
@@ -24,29 +15,36 @@ import { motion, AnimatePresence } from "framer-motion";
 const RegisterEmployer = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const { refetch, loading, data } = useGet({ url: `${apiUrl}/getCompanies` });
+  const { refetch: refetchTitles, loading: loadingTitles, data: titlesData } = useGet({ url: `${apiUrl}/get-job-titles` });
+  const { refetch: refetchList, loading: loadingList, data: listData } = useGet({
+    url: `${apiUrl}/get-specialization-experience`,
+  });
   const { postData, loadingPost, response } = usePost({ url: `${apiUrl}/registerEmployeer` });
-  // const { postData: postOTP, loadingPost: loadingOTP, response: responseOTP } = usePost({
-  //   url: `${apiUrl}/verifyOtp`,
-  // });
+
   // Tab state
   const [activeTab, setActiveTab] = useState("employer");
   const [companies, setCompanies] = useState([]);
+  const [experienceOptions, setExperienceOptions] = useState([]);
+  const [selectedExperience, setSelectedExperience] = useState(null);
+  const [titles, setTitles] = useState([]);
+  const [subTitles, setSubTitles] = useState([]);
+  const [filteredSubTitles, setFilteredSubTitles] = useState([]);
+  const [selectedTitle, setSelectedTitle] = useState(null);
+  const [selectedSubTitle, setSelectedSubTitle] = useState(null);
+  const [selectedCompany, setSelectedCompany] = useState(null);
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [selectedCompany, setSelectedCompany] = useState(null);
-  const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const otpInputs = useRef([]);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   useEffect(() => {
     refetch();
-  }, [refetch]);
+    refetchTitles();
+    refetchList();
+  }, [refetch, refetchTitles, refetchList]);
 
   useEffect(() => {
     if (data && data.companies) {
@@ -59,6 +57,55 @@ const RegisterEmployer = () => {
   }, [data]);
 
   useEffect(() => {
+    if (listData?.data) {
+      const formattedExperience = [
+        { label: "No Experience", value: null },
+        ...(listData.data.experince?.map((u) => ({
+          label: u,
+          value: u,
+        })) || []),
+      ];
+      setExperienceOptions(formattedExperience);
+    }
+  }, [listData]);
+
+  useEffect(() => {
+    if (titlesData && titlesData.job_titles) {
+      const formattedTitles = titlesData.job_titles.map((title) => ({
+        value: title.id,
+        label: title.name,
+      }));
+      setTitles(formattedTitles);
+    }
+  }, [titlesData]);
+
+  useEffect(() => {
+    if (titlesData && titlesData.job_sub_titles) {
+      const formattedSubTitles = titlesData.job_sub_titles.map((subTitle) => ({
+        value: subTitle.id,
+        label: subTitle.sub_title_name,
+        job_title_id: subTitle.job_title_id, // Keep reference for filtering
+      }));
+      setSubTitles(formattedSubTitles);
+    }
+  }, [titlesData]);
+
+  // Filter subtitles when selected title changes
+  useEffect(() => {
+    if (selectedTitle && subTitles.length > 0) {
+      const filtered = subTitles.filter(
+        (subTitle) => subTitle.job_title_id === selectedTitle.value
+      );
+      setFilteredSubTitles(filtered);
+      // Clear selected subtitle when title changes
+      setSelectedSubTitle(null);
+    } else {
+      setFilteredSubTitles([]);
+      setSelectedSubTitle(null);
+    }
+  }, [selectedTitle, subTitles]);
+
+  useEffect(() => {
     if (!loadingPost && response) {
       if (response.status === 200 || response.status === 201) {
         toast.success(response?.data?.message);
@@ -69,19 +116,9 @@ const RegisterEmployer = () => {
     }
   }, [response, loadingPost]);
 
-  // useEffect(() => {
-  //   if (!loadingOTP && responseOTP) {
-  //     if (responseOTP.status === 200) {
-  //       navigate("/login");
-  //       setIsOtpModalOpen(false);
-  //       toast.success("OTP verified successfully!");
-  //     }
-  //   }
-  // }, [responseOTP, loadingOTP, navigate, dispatch]);
-
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (!emailOrUsername || !password || !firstName || !lastName || !phone || !selectedCompany) {
+    if (!emailOrUsername || !password || !firstName || !lastName || !phone || !selectedCompany || !selectedTitle) {
       toast.error("All fields are required");
       return;
     }
@@ -92,39 +129,14 @@ const RegisterEmployer = () => {
     body.append("phone", phone);
     body.append("password", password);
     body.append("company_id", selectedCompany.value);
+    body.append("experience", selectedExperience.value);
+    body.append("job_title_id", selectedTitle.value);
+    // Add subtitle if selected
+    if (selectedSubTitle) {
+      body.append("job_sub_title_id", selectedSubTitle.value);
+    }
     await postData(body);
   };
-
-  // const handleOtpChange = (e, index) => {
-  //   const value = e.target.value;
-  //   if (/^[0-9]$/.test(value) || value === "") {
-  //     const newOtp = [...otp];
-  //     newOtp[index] = value;
-  //     setOtp(newOtp);
-  //     if (value && index < 5) {
-  //       otpInputs.current[index + 1].focus();
-  //     }
-  //   }
-  // };
-
-  // const handleOtpKeyDown = (e, index) => {
-  //   if (e.key === "Backspace" && !otp[index] && index > 0) {
-  //     otpInputs.current[index - 1].focus();
-  //   }
-  // };
-
-  // const handleOtpSubmit = async (e) => {
-  //   e.preventDefault();
-  //   const otpCode = otp.join("");
-  //   if (otpCode.length !== 6 || !/^\d{6}$/.test(otpCode)) {
-  //     toast.error("Please enter a valid 6-digit OTP");
-  //     return;
-  //   }
-  //   const body = new FormData();
-  //   body.append("email", emailOrUsername);
-  //   body.append("code", otpCode);
-  //   await postOTP(body, "OTP verification successful!");
-  // };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -362,6 +374,71 @@ const RegisterEmployer = () => {
                         <FaHeartbeat />
                       </span>
                     </motion.div>
+
+                    {/* Experience */}
+                    <motion.div
+                      className="relative"
+                      style={{ zIndex: 40 }}
+                      whileHover={{ scale: 1.03 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Select
+                        options={experienceOptions}
+                        value={selectedExperience}
+                        onChange={setSelectedExperience}
+                        placeholder="Select Experience"
+                        isLoading={loadingList}
+                        isDisabled={loadingPost}
+                        className="w-full"
+                        classNamePrefix="select"
+                        styles={selectStyles}
+                        menuPortalTarget={document.body}
+                      />
+                    </motion.div>
+
+                    {/* Job Title Select */}
+                    <motion.div
+                      style={{ zIndex: 30 }}
+                      whileHover={{ scale: 1.03 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Select
+                        options={titles}
+                        value={selectedTitle}
+                        onChange={setSelectedTitle}
+                        placeholder="Select job title"
+                        isLoading={loadingTitles}
+                        isDisabled={loadingPost}
+                        className="w-full"
+                        classNamePrefix="select"
+                        menuPortalTarget={document.body}
+                        styles={selectStyles}
+                      />
+                    </motion.div>
+
+                    {/* Job Sub Title Select - Only show when a title is selected */}
+                    {selectedTitle && (
+                      <motion.div
+                        style={{ zIndex: 25 }}
+                        whileHover={{ scale: 1.03 }}
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <Select
+                          options={filteredSubTitles}
+                          value={selectedSubTitle}
+                          onChange={setSelectedSubTitle}
+                          placeholder="Select job sub title (optional)"
+                          isDisabled={loadingPost || filteredSubTitles.length === 0}
+                          className="w-full"
+                          classNamePrefix="select"
+                          menuPortalTarget={document.body}
+                          styles={selectStyles}
+                        />
+                      </motion.div>
+                    )}
+
                     <motion.div
                       style={{ zIndex: 20 }}
                       whileHover={{ scale: 1.03 }}
@@ -494,49 +571,6 @@ const RegisterEmployer = () => {
           </CardContent>
         </Card>
       </motion.div>
-
-      {/* <AnimatePresence>
-        {isOtpModalOpen && (
-          <Dialog open={isOtpModalOpen} onOpenChange={setIsOtpModalOpen} className="bg-transparent">
-            <DialogContent className="bg-white/90 backdrop-blur-lg rounded-xl shadow-2xl p-6 max-w-sm border border-bg-primary/50">
-              <DialogHeader>
-                <DialogTitle className="text-bg-primary text-xl font-bold">
-                  Verify OTP
-                </DialogTitle>
-                <DialogDescription className="text-gray-600 text-sm">
-                  Enter the 6-digit OTP sent to your email ({emailOrUsername}).
-                </DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleOtpSubmit} className="space-y-4">
-                <div className="flex justify-between gap-2">
-                  {otp.map((digit, index) => (
-                    <Input
-                      key={index}
-                      type="text"
-                      maxLength={1}
-                      value={digit}
-                      onChange={(e) => handleOtpChange(e, index)}
-                      onKeyDown={(e) => handleOtpKeyDown(e, index)}
-                      ref={(el) => (otpInputs.current[index] = el)}
-                      className="w-10 h-10 text-center text-base border border-bg-primary/50 rounded-md focus:ring-2 focus:ring-bg-primary text-bg-primary"
-                      disabled={loadingOTP}
-                    />
-                  ))}
-                </div>
-                <DialogFooter>
-                  <Button
-                    type="submit"
-                    className="w-full bg-gradient-to-r from-bg-primary to-blue-300 text-white hover:from-blue-700 hover:to-blue-500 rounded-lg transition-all duration-200"
-                    disabled={loadingOTP}
-                  >
-                    {loadingOTP ? "Verifying..." : "Verify OTP"}
-                  </Button>
-                </DialogFooter>
-              </form>
-            </DialogContent>
-          </Dialog>
-        )}
-      </AnimatePresence> */}
 
       <ToastContainer />
     </div>

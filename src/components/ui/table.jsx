@@ -285,7 +285,7 @@ function Table({
                           <img
                             src={item[col.key]}
                             alt={item.name}
-                            className="w-12 h-12 object-cover rounded-md"
+                            className="w-12 h-12 object-contain rounded-md"
                           />
                         ) : (
                           <Avatar className="w-12 h-12 rounded-full bg-gray-200">

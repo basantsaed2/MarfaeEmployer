@@ -238,7 +238,7 @@ const RegisterEmployer = () => {
               className="text-center mb-5"
             >
               <h2 className="text-4xl font-extrabold text-bg-primary tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-bg-primary to-blue-300">
-                Mrfae
+                Medilinky
               </h2>
               <AnimatePresence mode="wait">
                 {activeTab === "employer" ? (
@@ -467,7 +467,7 @@ const RegisterEmployer = () => {
                         className="w-full p-3 text-base bg-gradient-to-r from-bg-primary to-blue-300 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-500 transition-all duration-300 disabled:opacity-50 shadow-lg"
                         disabled={loadingPost}
                       >
-                        {loadingPost ? "Registering..." : "Register Mrfae"}
+                        {loadingPost ? "Registering..." : "Register Medilinky"}
                       </Button>
                     </motion.div>
                     <Link
@@ -532,7 +532,7 @@ const RegisterEmployer = () => {
                     whileTap={{ scale: 0.95 }}
                   >
                     <a
-                      href="https://mrfae.com/register"
+                      href="https://medilinky.com/register"
                       className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-bg-primary to-blue-600 text-white text-lg font-semibold rounded-2xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl group"
                       target="_blank"
                       rel="noopener noreferrer"

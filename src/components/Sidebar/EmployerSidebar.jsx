@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
-import { BriefcaseBusiness, SquareChartGantt ,FileUser} from "lucide-react";
+import { BriefcaseBusiness, SquareChartGantt, FileUser } from "lucide-react";
 import { PiSignOutBold } from "react-icons/pi";
 import { Button } from "@/components/ui/button";
 import {
@@ -102,11 +102,14 @@ export function EmployerSidebar() {
             >
                 <SidebarGroup>
                     <SidebarGroupLabel className="p-2 text-white flex items-center justify-center gap-3">
-                        <img
+                        {/* <img
                             src={logo}
-                            alt={logo || "Marfae"}
+                            alt={logo || "Medilinky"}
                             className="w-dull h-24 object-cover border-2 border-white/30 hover:scale-105 transition-transform duration-200"
-                        />
+                        /> */}
+                        <h2 className="text-4xl font-bold text-bg-primary p-2 flex items-center gap-3">
+                            Medilinky
+                        </h2>
                     </SidebarGroupLabel>
                     <hr className="w-full border-white !mb-3" />
 

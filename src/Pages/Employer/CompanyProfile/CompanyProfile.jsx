@@ -272,7 +272,7 @@ const CompanyProfile = () => {
             const encodedData = encodeData(userAuthData);
 
             // Redirect to user domain with encoded data
-            const userUrl = `https://mrfae.com/?auth=data&d=${encodedData}`;
+            const userUrl = `https://medilinky.com/?auth=data&d=${encodedData}`;
             window.open(userUrl, '_blank');
             setIsDialogOpen(false);
 

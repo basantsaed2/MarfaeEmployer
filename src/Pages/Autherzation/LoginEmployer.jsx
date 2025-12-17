@@ -153,7 +153,7 @@ const LoginEmployer = () => {
               className="text-center mb-5"
             >
               <h2 className="text-4xl font-extrabold text-bg-primary tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-bg-primary to-blue-300">
-                Mrfae
+                Medilinky
               </h2>
 
               <AnimatePresence mode="wait">
@@ -232,12 +232,12 @@ const LoginEmployer = () => {
                         className="w-full p-4 text-lg bg-gradient-to-r from-bg-primary to-blue-300 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-500 transition-all duration-300 disabled:opacity-50 shadow-lg"
                         disabled={loadingPost}
                       >
-                        {loadingPost ? "Logging in..." : "Login Mrfae"}
+                        {loadingPost ? "Logging in..." : "Login Medilinky"}
                       </Button>
                     </div>
                   </form>
                   <p className="text-center text-gray-500 mt-6 text-sm">
-                    New to Mrfae?{" "}
+                    New to Medilinky?{" "}
                     <Link
                       to="/register"
                       className="text-bg-primary font-semibold hover:underline hover:text-blue-500 transition-colors duration-200"
@@ -291,7 +291,7 @@ const LoginEmployer = () => {
                     whileTap={{ scale: 0.95 }}
                   >
                     <a
-                      href="https://mrfae.com/login"
+                      href="https://medilinky.com/login"
                       className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-bg-primary to-blue-600 text-white text-lg font-semibold rounded-2xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl group"
                       target="_blank"
                       rel="noopener noreferrer"

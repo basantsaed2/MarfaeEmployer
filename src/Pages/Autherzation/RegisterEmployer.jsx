@@ -79,8 +79,8 @@ const RegisterEmployer = () => {
   }, [listData]);
 
   useEffect(() => {
-    if (titlesData && titlesData.job_titles) {
-      const formattedTitles = titlesData.job_titles.map((title) => ({
+    if (titlesData && titlesData.employer_job_titles) {
+      const formattedTitles = titlesData.employer_job_titles.map((title) => ({
         value: title.id,
         label: title.name,
       }));

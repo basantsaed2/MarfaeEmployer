@@ -332,7 +332,7 @@ const CompanyProfile = () => {
     const employerCountryName = getEmployerCountryName();
 
     return (
-        <div className="min-h-screen p-4 lg:p-6">
+        <div className="min-h-screen p-2 md:p-4 lg:p-6">
             {/* Hero Section */}
             <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-lg p-4 md:p-6 lg:p-8 text-white mb-6 md:mb-8 overflow-hidden">
                 {/* Edit Profile Button - Positioned in top right with responsive design */}
@@ -400,9 +400,9 @@ const CompanyProfile = () => {
                             <div className="flex items-center justify-center md:justify-start gap-2 mt-2 md:mt-3 text-white/90">
                                 <FiMapPin className="h-3 w-3 md:h-4 md:w-4" />
                                 <span className="text-xs md:text-sm break-words">
-                                    {employerDetails?.company.city.name && employerDetails.company?.country.name
-                                        ? `${employerDetails?.company.city.name}, ${employerDetails.company?.country.name}`
-                                        : employerDetails?.company.city.name || employerDetails.company?.country.name || ''}
+                                    {[employerDetails?.company?.city?.name, employerDetails?.company?.country?.name]
+                                        .filter(Boolean)
+                                        .join(", ")}
                                 </span>
                             </div>
                         )}
@@ -651,7 +651,7 @@ const CompanyProfile = () => {
             </Dialog>
 
             {/* Profile Details and Statistics */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
                 {/* Company Information */}
                 <div className="md:col-span-2 bg-white rounded-xl shadow-md p-4 md:p-6 overflow-hidden">
                     <h3 className="text-lg md:text-xl font-semibold text-gray-800 mb-3 md:mb-4">Company Information</h3>
@@ -667,9 +667,9 @@ const CompanyProfile = () => {
                         <div className="flex flex-col break-words">
                             <span className="text-xs md:text-sm text-gray-500 font-medium">Location</span>
                             <span className="font-semibold text-sm md:text-base">
-                                {companyDetails.city?.name && companyDetails.country?.name
-                                    ? `${companyDetails.city.name}, ${companyDetails.country.name}`
-                                    : companyDetails.location_link || "Not provided"}
+                                {[companyDetails.city?.name, companyDetails.country?.name]
+                                    .filter(Boolean)
+                                    .join(", ") || companyDetails.location_link || "Not provided"}
                             </span>
                         </div>
                         <div className="flex flex-col break-words">

@@ -9,8 +9,17 @@ import Select from "react-select";
 import "react-toastify/dist/ReactToastify.css";
 import { usePost } from "@/Hooks/UsePost";
 import { useGet } from "@/Hooks/UseGet";
-import { FaStethoscope, FaHeartbeat, FaUserMd, FaSyringe, FaEye, FaEyeSlash, FaBriefcase, FaUsers } from "react-icons/fa";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { FaStethoscope, FaHeartbeat, FaUserMd, FaSyringe, FaEye, FaEyeSlash, FaBriefcase, FaUsers, FaCheckCircle } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+
 
 const RegisterEmployer = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -36,7 +45,9 @@ const RegisterEmployer = () => {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isApprovalModalOpen, setIsApprovalModalOpen] = useState(false);
   const navigate = useNavigate();
+
 
   useEffect(() => {
     refetch();
@@ -81,13 +92,18 @@ const RegisterEmployer = () => {
 
     if (!loadingPost && response) {
       if (response.status === 200 || response.status === 201) {
-        toast.success(response?.data?.message);
-        navigate("/login");
+        setIsApprovalModalOpen(true);
       } else {
         toast.error(response?.data?.message || "Registration failed");
       }
     }
   }, [response, loadingPost]);
+
+  const handleApprovalModalClose = () => {
+    setIsApprovalModalOpen(false);
+    navigate("/login");
+  };
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -520,8 +536,35 @@ const RegisterEmployer = () => {
       </motion.div>
 
       <ToastContainer />
+
+      {/* Modal for admin approval warning */}
+      <Dialog open={isApprovalModalOpen} onOpenChange={setIsApprovalModalOpen}>
+        <DialogContent className="bg-white/90 backdrop-blur-xl rounded-2xl border border-bg-primary/50 shadow-2xl max-w-md w-[90%]">
+          <DialogHeader className="text-center">
+            <div className="mx-auto w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
+              <FaCheckCircle className="text-yellow-500 text-3xl" />
+            </div>
+            <DialogTitle className="text-bg-primary text-2xl font-bold">Registration Successful!</DialogTitle>
+            <DialogDescription className="text-gray-600 text-lg mt-2">
+              Your account has been created successfully.
+              <span className="block mt-2 font-semibold text-yellow-600 underline">
+                Please wait for Admin approval before you can log in.
+              </span>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-6">
+            <Button
+              onClick={handleApprovalModalClose}
+              className="w-full py-6 text-lg bg-gradient-to-r from-bg-primary to-blue-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg"
+            >
+              Understand & Go to Login
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
+
 
 export default RegisterEmployer;

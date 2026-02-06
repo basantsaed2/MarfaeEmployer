@@ -226,6 +226,14 @@ const LoginEmployer = () => {
                         <FaHeartbeat />
                       </span>
                     </div>
+                    <div className="flex justify-end p-1">
+                      <Link
+                        to="/forgot_password"
+                        className="text-bg-primary text-sm font-semibold hover:underline hover:text-blue-500 transition-colors duration-200"
+                      >
+                        Forgot Password?
+                      </Link>
+                    </div>
                     <div>
                       <Button
                         type="submit"

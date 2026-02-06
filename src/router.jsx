@@ -9,6 +9,8 @@ import AuthLayout from "./Layout/AuthLayout";
 import CompanyProfile from "./Pages/Employer/CompanyProfile/CompanyProfile";
 import RegisterEmployer from "./Pages/Autherzation/RegisterEmployer";
 import AddNewCompany from "./Pages/Autherzation/AddNewCompany";
+import ForgotPassword from "./Pages/Autherzation/ForgotPassword";
+
 import EditCompanyProfile from "./Pages/Employer/CompanyProfile/EditCompanyProfile";
 import ChangePassword from "./Pages/Employer/CompanyProfile/ChangePassword";
 import JobsManagment from "./Pages/Employer/JobsManagment/JobsManagment";
@@ -46,6 +48,14 @@ const router = createBrowserRouter([
         element: (
           <ProtAuth>
             <AddNewCompany />
+          </ProtAuth>
+        ),
+      },
+      {
+        path: "forgot_password",
+        element: (
+          <ProtAuth>
+            <ForgotPassword />
           </ProtAuth>
         ),
       },
@@ -93,7 +103,7 @@ const router = createBrowserRouter([
           { path: "add", element: <AddJob /> },
         ],
       },
-       {
+      {
         path: "add_job",
         element: <AddJob />
       },
@@ -108,7 +118,7 @@ const router = createBrowserRouter([
         path: "applied_applications",
         element: <Cv />
       },
-       {
+      {
         path: "my_cv",
         element: <AssignedCV />
       },

@@ -27,11 +27,9 @@ const RegisterEmployer = () => {
   const [experienceOptions, setExperienceOptions] = useState([]);
   const [selectedExperience, setSelectedExperience] = useState(null);
   const [titles, setTitles] = useState([]);
-  const [subTitles, setSubTitles] = useState([]);
-  const [filteredSubTitles, setFilteredSubTitles] = useState([]);
   const [selectedTitle, setSelectedTitle] = useState(null);
-  const [selectedSubTitle, setSelectedSubTitle] = useState(null);
   const [selectedCompany, setSelectedCompany] = useState(null);
+
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -80,32 +78,7 @@ const RegisterEmployer = () => {
   }, [titlesData]);
 
   useEffect(() => {
-    if (titlesData && titlesData.job_sub_titles) {
-      const formattedSubTitles = titlesData.job_sub_titles.map((subTitle) => ({
-        value: subTitle.id,
-        label: subTitle.sub_title_name,
-        job_title_id: subTitle.job_title_id, // Keep reference for filtering
-      }));
-      setSubTitles(formattedSubTitles);
-    }
-  }, [titlesData]);
 
-  // Filter subtitles when selected title changes
-  useEffect(() => {
-    if (selectedTitle && subTitles.length > 0) {
-      const filtered = subTitles.filter(
-        (subTitle) => subTitle.job_title_id === selectedTitle.value
-      );
-      setFilteredSubTitles(filtered);
-      // Clear selected subtitle when title changes
-      setSelectedSubTitle(null);
-    } else {
-      setFilteredSubTitles([]);
-      setSelectedSubTitle(null);
-    }
-  }, [selectedTitle, subTitles]);
-
-  useEffect(() => {
     if (!loadingPost && response) {
       if (response.status === 200 || response.status === 201) {
         toast.success(response?.data?.message);
@@ -131,11 +104,8 @@ const RegisterEmployer = () => {
     body.append("company_id", selectedCompany.value);
     body.append("experience", selectedExperience.value);
     body.append("job_title_id", selectedTitle.value);
-    // Add subtitle if selected
-    if (selectedSubTitle) {
-      body.append("job_sub_title_id", selectedSubTitle.value);
-    }
     await postData(body);
+
   };
 
   const togglePasswordVisibility = () => {
@@ -415,29 +385,6 @@ const RegisterEmployer = () => {
                         styles={selectStyles}
                       />
                     </motion.div>
-
-                    {/* Job Sub Title Select - Only show when a title is selected */}
-                    {selectedTitle && (
-                      <motion.div
-                        style={{ zIndex: 25 }}
-                        whileHover={{ scale: 1.03 }}
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <Select
-                          options={filteredSubTitles}
-                          value={selectedSubTitle}
-                          onChange={setSelectedSubTitle}
-                          placeholder="Select job sub title (optional)"
-                          isDisabled={loadingPost || filteredSubTitles.length === 0}
-                          className="w-full"
-                          classNamePrefix="select"
-                          menuPortalTarget={document.body}
-                          styles={selectStyles}
-                        />
-                      </motion.div>
-                    )}
 
                     <motion.div
                       style={{ zIndex: 20 }}

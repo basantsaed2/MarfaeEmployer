@@ -105,7 +105,7 @@ export function EmployerSidebar() {
                         <img
                             src={logo}
                             alt={logo || "Medilinky"}
-                            className="w-dull h-24 object-cover border-2 border-white/30 hover:scale-105 transition-transform duration-200"
+                            className="h-24 object-cover border-2 border-white/30 hover:scale-105 transition-transform duration-200"
                         />
                         {/* <h2 className="text-4xl font-bold text-bg-primary p-2 flex items-center gap-3">
                             Medilinky

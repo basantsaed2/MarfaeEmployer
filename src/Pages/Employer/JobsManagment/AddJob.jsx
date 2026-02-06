@@ -370,7 +370,7 @@ const AddJob = ({ lang = 'en' }) => {
             zone_id: '',
             jobTitle: '',
             description: '',
-            qualifications: '',
+            job_qualification_id: '',
             // image: null,
             type: '',
             experience: '',
